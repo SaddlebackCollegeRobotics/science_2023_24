@@ -15,7 +15,7 @@ class SCD30Publisher : public rclcpp::Node {
 public:
   SCD30Publisher() : Node("scd30_sensor_1") {
     publisher_ =
-        this->create_publisher<std_msgs::msg::Float32>("scd30_sensor_1", 10);
+        this->create_publisher<std_msgs::msg::Float32>("/scd30_sensor_1", 10);
     timer_ = this->create_wall_timer(
         2s, std::bind(&SCD30Publisher::publish_o2, this));
   }
