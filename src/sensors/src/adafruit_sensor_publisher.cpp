@@ -23,7 +23,8 @@ public:
 private:
   void publish_o2() {
     auto message = std_msgs::msg::Float32();
-    message.data = 540.10f;
+    message.data = 400 + static_cast<float>(rand()) /
+                             (static_cast<float>(RAND_MAX / (700 - 400)));
     publisher_->publish(message);
   }
 
