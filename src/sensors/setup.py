@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'adafruit_sensor = sensors.adafruit_sensor:main'
+            'arduino_manager = sensors.arduino_manager:main'
         ],
     },
 )
