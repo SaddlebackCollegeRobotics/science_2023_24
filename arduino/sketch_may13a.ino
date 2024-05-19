@@ -5,8 +5,10 @@
 #include <Stepper.h>            // Stepper Motor
 
 
+#define DEBUG
+
 //    I2C ADDRESSES
-#define I2C_MUX_ADDRESS 0x70    // by default
+#define I2C_MUX_ADDRESS 0x70    // by default 
 #define CO2_ADDRESS     0x61    // by default
 #define lox0_ADDRESS    0x52    // by default
 #define lox1_ADDRESS    0X00    // To Be Set to 0x53
@@ -43,17 +45,18 @@ uint8_t transmission_in[6];   // temporary template for incoming transmission
 
 
 // structs and namespaces
-struct command_set{
-  uint8_t chip;
-  uint8_t func;
-  uint8_t param;
-  uint8_t crc;
-};
+// struct command_set{
+//   uint8_t chip;
+//   uint8_t func;
+//   uint8_t param;
+//   uint8_t crc;
+// };
 
 // control objects
 Adafruit_SCD30 scd30;
 Adafruit_VL53L0X lox[2];
 Servo scoop[4];
+// TODO: Ask Kaveh when he's done testing
 Stepper myStepper[3] = {Stepper(stepsPerRevolution, 13, 12),
                         Stepper(stepsPerRevolution, 9, 8),
                         Stepper(stepsPerRevolution, 11, 10)};
@@ -88,7 +91,7 @@ void scd30_setup() {
   if (scd30.begin()) {
       scd30.startContinuousMeasurement();
     } else {
-      // init failed
+      // TODO: init failed
     }
 }
 
@@ -112,9 +115,13 @@ void scd30_set_temp(uint8_t temp) {
 
 void scd30_get_data() {  // == code here is copied from sample, adjust if needed
   if (scd30.dataReady()){
+#ifdef DEBUG
     Serial.println("Data available!");
 
-    if (!scd30.read()){ Serial.println("Error reading sensor data"); return; }
+    if (!scd30.read()) { 
+      Serial.println("Error reading sensor data"); 
+      return;
+    }
 
     Serial.print("Temperature: ");
     Serial.print(scd30.temperature);
@@ -128,6 +135,7 @@ void scd30_get_data() {  // == code here is copied from sample, adjust if needed
     Serial.print(scd30.CO2, 3);
     Serial.println(" ppm");
     Serial.println("");
+#endif
   } else {
     //Serial.println("No data");
   }
@@ -149,7 +157,9 @@ void lox_setup_continuous(Adafruit_VL53L0X &lox, uint8_t addr = lox0_ADDRESS) {
 
 void lox_measure_once(Adafruit_VL53L0X &lox ) { 
   if (lox.isRangeComplete()) {
+#ifdef DEBUG
     Serial.print("Distance in mm: ");
+#endif
     lox.readRange();  // need a container to take the data in mm, possibly float/double precision
   }
 }
@@ -179,8 +189,10 @@ void pump_duration() {
       digitalWrite(pump::pumpPinArr[i], LOW);
     }
     pump::pumpsActive = false;
+#ifdef DEBUG
     Serial.print("Current ms - start ms: ");
     Serial.println(pump::currentMillis1 - pump::startMillis1);
+#endif
   }
 }
 
@@ -196,10 +208,10 @@ void scoop_up(uint8_t s_id) {
   scoop[s_id].writeMicroseconds(pulseWidth[s_id]);
 }
 
-void scoop_move_increment(uint8_t s_id, int step) {
-  pulseWidth[s_id] += step;
-  if(pulseWidth[s_id] > 1550) pulseWidth[s_id] = 1550;
-  if(pulseWidth[s_id] < 550 ) pulseWidth[s_id] = 550;
+void scoop_move_increment(uint8_t s_id, uint8_t step_unsigned) {
+  int step = map(step_unsigned, 0, 255, 500, 2500);
+  pulseWidth[s_id] = step;
+  pulseWidth[s_id] = constrain(pulseWidth[s_id], 500, 2500);
   scoop[s_id].writeMicroseconds(pulseWidth[s_id]);
 }
 
@@ -306,7 +318,7 @@ void instruction_handle() {
       stepper_ops_button(bytes_0 - 10);
       break;
     case SERVO_1:   // id 12 thru 15
-    case  SERVO_2:
+    case SERVO_2:
     case SERVO_3:
     case SERVO_4:
       switch(bytes_1) {
