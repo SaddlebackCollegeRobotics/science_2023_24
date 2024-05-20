@@ -1,5 +1,6 @@
-#include <Adafruit_SCD30.h>   // CO2 sensors
+#define STDINT_H // HACK: To avoid clangd errors for typedef redefinition
 #include <Adafruit_VL53L0X.h> // ToF sensors
+#include <Adafruit_SCD30.h>   // CO2 sensors
 #include <Servo.h>            // PWM module . Stepper module
 #include <Stepper.h>          // Stepper Motor
 #include <Wire.h>             // Serial Comm
