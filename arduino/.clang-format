@@ -1,0 +1,22 @@
+---
+BreakConstructorInitializers: BeforeComma
+
+AlwaysBreakTemplateDeclarations: true
+
+PointerAlignment: Left
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  SplitEmptyFunction: false
+  AfterClass: true
+  AfterFunction: true
+  AfterStruct: true
+
+TabWidth: 4
+IndentWidth: 4
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+
+ColumnLimit: 120
+
+AllowShortFunctionsOnASingleLine: Inline
