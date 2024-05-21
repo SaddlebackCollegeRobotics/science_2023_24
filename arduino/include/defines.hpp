@@ -13,12 +13,14 @@
         char buf[64]{};                                                                                                \
         snprintf(buf, 64, msg VA_ARGS(__VA_ARGS__));                                                                   \
         Serial.println(buf);                                                                                           \
+        Serial.flush();                                                                                                \
     }
 // TODO: Reset program upon assertion failure
 #define DEBUG_ASSERT(condition, msg, ...)                                                                              \
     if (!(condition)) {                                                                                                \
         DEBUG_LOG(msg, __VA_ARGS__);                                                                                   \
-        exit(1);                                                                                                       \
+        void (*resetFunc)() = nullptr;                                                                                 \
+        resetFunc();                                                                                                   \
     }
 // NOLINTEND
 #else

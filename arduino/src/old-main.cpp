@@ -1,3 +1,4 @@
+#if 0
 #include <Adafruit_SCD30.h>   // CO2 sensors
 #include <Adafruit_VL53L0X.h> // ToF sensors
 #include <Servo.h>            // PWM module . Stepper module
@@ -470,7 +471,7 @@ void setup()
 
 void loop()
 {
-
+    DEBUG_LOG("%d parsed integer. %s", 123, "hi");
     // put your main code here, to run repeatedly:
 
     pump_duration();
@@ -484,3 +485,4 @@ void loop()
     // build switch to distribute incoming instructions
     //  i/o handle
 }
+#endif
