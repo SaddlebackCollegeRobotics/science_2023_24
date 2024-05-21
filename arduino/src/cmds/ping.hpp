@@ -5,6 +5,6 @@
 
 namespace cmd {
 
-void nop(const String&);
+String ping(const String&);
 
 } // namespace cmd

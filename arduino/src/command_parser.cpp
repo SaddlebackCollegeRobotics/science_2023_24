@@ -1,54 +1,56 @@
 #include "command_parser.hpp"
+#include "HardwareSerial.h"
 #include "cmds/all.hpp"
 #include "cmds/command_types.hpp"
 #include "util/array.hpp"
+#include "util/misc.hpp"
+#include "util/strings.hpp"
 #include <CRC32.h>
-
-namespace {
-union conversion
-{
-    cmd::CommandData cmd_data;
-    char raw : cmd::cmd_size * 8;
-};
-
-} // namespace
 
 namespace cmd {
 
-ParsedCommand ParsedCommand::from_bytes(const char* bytes)
+ParsedCommand ParsedCommand::from_str(const char* str)
 {
-    CommandData data = *(CommandData*)bytes;
-    Serial.write(bytes, 10);
-    Serial.println();
-    Serial.write((byte*)(&data), 10);
-    Serial.println();
-
-    // memcpy(&data, bytes, sizeof(data));
+    CommandData data{};
     ParserError err = ParserError::NONE;
-    DEBUG_LOG_HEX(bytes, 10, "Parsing data:");
 
-    DEBUG_LOG_HEX((const uint8_t*)(&data), sizeof(data) - sizeof(checksum_data_t), "Calculating checksum for:");
+    auto str_data = util::split<4>(str);
+
+    data.dev = str_data[0];
+    data.func = str_data[1];
+    data.param = str_data[2];
+    // HACK: str *should* be null-terminated, but we should do checks...
+    data.checksum = strtoul(str_data[3].begin(), nullptr, 16);
+
+    // TODO: Refactor. Maybe new macro
+    DEBUG_LOG(R"(Parsing command: (dev="%s", func="%s", param="%s", checksum="%#.8lx"))", data.dev.c_str(),
+              data.func.c_str(), data.param.c_str(), data.checksum)
     // Calc the checksum of the received data, excluding the received checksum itself
-    checksum_data_t checksum_calc = CRC32::calculate(&data, sizeof(data) - sizeof(checksum_data_t));
+    checksum_data_t checksum_calc =
+        CRC32::calculate(str, str_data[0].length() + str_data[1].length() + str_data[2].length() + 3);
 
     // Check whether the sums match
     if (checksum_calc != data.checksum) {
-        DEBUG_LOG_CMD(data, "Checksum mismatch :: Expected = %#.4lx, Received = %#.4lx", checksum_calc, data.checksum);
+        DEBUG_LOG("Checksum mismatch :: Expected = %#.8lx, Received = %#.8lx", checksum_calc, data.checksum);
         err = ParserError::CHECKSUM_MISMATCH;
         return {data, err};
     }
 
-    if (!in_range(data.dev, COMMAND_MAP)) {
+    if (COMMAND_MAP[data.dev] == nullptr) {
+        DEBUG_LOG("Invalid device name (\"%s\")", data.dev.c_str());
         err = ParserError::INVALID_DEVICE;
         return {data, err};
     }
 
     // COMMAND_MAP[data.func] is guaranteed to be a valid address,
     // given that the above test passed.
-    if (!in_range(data.func, COMMAND_MAP[data.func])) {
+    if ((*COMMAND_MAP[data.dev])[data.func] == nullptr) {
+        DEBUG_LOG("Invalid function name (device=\"%s\", function=\"%s\")", data.dev.c_str(), data.func.c_str());
         err = ParserError::INVALID_FUNCTION;
         return {data, err};
     }
+
+    DEBUG_LOG("Successfully parsed command!");
 
     return {data, err};
 }
@@ -58,18 +60,34 @@ ParsedCommand::ParsedCommand(const CommandData& data, ParserError err)
     , err_(err)
 {}
 
-ret_t ParsedCommand::call() const
+void ParsedCommand::call(bool auto_respond) const
 {
     if (err_ != ParserError::NONE) {
-        DEBUG_LOG_CMD(data_, "Attempted to call command with erroneous parse! (Err = %d)", static_cast<int>(err_));
-        return {};
+        DEBUG_LOG("Attempted to call command with erroneous parse! (Err = %d)", static_cast<int>(err_));
+        return;
     }
 
-    DEBUG_LOG_CMD(data_, "Executing command");
+    DEBUG_LOG(R"(Executing command (dev="%s", func="%s", param="%s"))", data_.dev.c_str(), data_.func.c_str(),
+              data_.param.c_str());
 
-    auto func = COMMAND_MAP[data_.dev][data_.func];
+    auto func = *(*COMMAND_MAP[data_.dev])[data_.func];
 
-    return func(data_.param);
+    auto ret = func(data_.param);
+
+    if (auto_respond) {
+        respond(ret);
+    }
+}
+
+void ParsedCommand::respond(const String& msg) const
+{
+    String response = data_.dev + "," + data_.func + "," + msg + ",";
+
+    auto checksum = CRC32::calculate(response.c_str(), response.length());
+
+    response += checksum;
+
+    Serial.println(response);
 }
 
 } // namespace cmd

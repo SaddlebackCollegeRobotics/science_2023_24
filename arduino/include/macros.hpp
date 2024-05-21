@@ -9,7 +9,7 @@
 #define VA_ARGS(...) , ##__VA_ARGS__
 #define DEBUG_LOG(msg, ...)                                                                                            \
     {                                                                                                                  \
-        Serial.print("DEBUG LOG: ");                                                                                   \
+        Serial.print("DEBUG: ");                                                                                       \
         char buf[256]{};                                                                                               \
         snprintf(buf, 256, msg VA_ARGS(__VA_ARGS__));                                                                  \
         Serial.println(buf);                                                                                           \
@@ -27,7 +27,7 @@
 #define DEBUG_ASSERT(condition, msg, ...)                                                                              \
     if (!(condition)) {                                                                                                \
         DEBUG_LOG(msg, __VA_ARGS__);                                                                                   \
-        void (*resetFunc)() = nullptr;                                                                                 \
+        void (*resetFunc)() = 0x0;                                                                                     \
         resetFunc();                                                                                                   \
     }
 // NOLINTEND

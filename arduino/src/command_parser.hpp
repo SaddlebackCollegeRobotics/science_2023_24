@@ -1,23 +1,19 @@
 #pragma once
 
-#include "cmds/all.hpp"
 #include "cmds/command_types.hpp"
-#include <stdint.h>
+#include <WString.h>
+#include <macros.hpp>
 
 namespace cmd {
 
 // #pragma pack()
 struct CommandData
 {
-    uint8_t dev;
-    uint8_t func;
-    param_t param;
+    String dev;
+    String func;
+    String param;
     checksum_data_t checksum;
 };
-
-constexpr auto cmd_size = (int)sizeof(cmd::CommandData);
-
-static_assert(cmd_size == 10, "CommandData must be 10 bytes large!");
 
 enum class ParserError
 {
@@ -30,7 +26,7 @@ enum class ParserError
 class ParsedCommand
 {
 public:
-    static ParsedCommand from_bytes(const char* bytes);
+    static ParsedCommand from_str(const char* str);
 
     [[nodiscard]] CommandData get_data() const
     {
@@ -40,7 +36,8 @@ public:
         return data_;
     }
     [[nodiscard]] ParserError get_error() const { return err_; };
-    [[nodiscard]] ret_t call() const;
+    void call(bool auto_respond = true) const;
+    void respond(const String& msg) const;
 
 private:
     CommandData data_;
@@ -50,9 +47,3 @@ private:
 };
 
 } // namespace cmd
-
-#ifdef DEBUG
-#define DEBUG_LOG_CMD(cmd, msg, ...)                                                                                   \
-    DEBUG_LOG(msg " [Command (dev=%#.2hhx, func=%#.2hhx, param=%#.8lx)]" VA_ARGS(__VA_ARGS__), (char*)(&cmd.dev),      \
-              (char*)(&cmd.func), cmd.param.data)
-#endif

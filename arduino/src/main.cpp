@@ -1,26 +1,23 @@
 #include "command_parser.hpp"
+#include "task_queue.hpp"
 #include <Arduino.h>
-#include <defines.hpp>
-
-#ifdef DEBUG
-// #include "avr8-stub.h"
-#endif
+#include <macros.hpp>
 
 void setup()
 {
     Serial.begin(9600);
-#ifdef DEBUG
-    // debug_init();
-#endif
 }
 
 void loop()
 {
-    if (Serial.available() >= cmd::cmd_size) {
-        char buf[cmd::cmd_size];
-        Serial.readBytes(buf, cmd::cmd_size);
-        auto command = cmd::ParsedCommand::from_bytes(buf);
+    if (Serial.available() >= cmd::min_size) {
+        auto str = Serial.readStringUntil('\n');
+        auto command = cmd::ParsedCommand::from_str(str.c_str());
 
-        command.call();
+        if (command.get_error() == cmd::ParserError::NONE) {
+            command.call();
+        }
     }
+
+    tasks::process();
 }

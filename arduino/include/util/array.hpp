@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../defines.hpp"
+#include "../macros.hpp"
 
 namespace util {
 

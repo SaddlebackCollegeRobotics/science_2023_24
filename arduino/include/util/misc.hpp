@@ -1,6 +1,7 @@
 #pragma once
 
 #include "array.hpp"
+#include "strings.hpp"
 #include <WString.h>
 #include <string.h>
 
@@ -19,15 +20,16 @@ namespace util {
 // }
 
 template <int N>
-constexpr util::array<String, N> split(const char* str, char delim = ',')
+constexpr util::array<String, N> split(util::string_view str, char delim = ',')
 {
     util::array<String, N> result{};
     int resultI = 0;
 
-    const char* lastIter = str;
-    const char* findIter = str;
-    while ((findIter = strchr(findIter, delim)) != nullptr) {
-        result[resultI++] = String(lastIter).substring(0, findIter - lastIter);
+    auto lastIter = str.begin();
+    auto findIter = str.begin();
+
+    while ((findIter = str.find(delim, findIter)) != string_view::npos) {
+        result[resultI++] = string_view{lastIter, findIter}.printable();
         findIter++;
 
         lastIter = findIter;
@@ -37,7 +39,7 @@ constexpr util::array<String, N> split(const char* str, char delim = ',')
         }
     }
 
-    result[resultI] = String(lastIter);
+    result[resultI] = string_view{lastIter}.printable();
 
     return result;
 }

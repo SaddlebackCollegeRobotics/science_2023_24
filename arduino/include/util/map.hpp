@@ -2,7 +2,6 @@
 
 #include "functional.hpp"
 #include "pair.hpp"
-#include <assert.h>
 
 namespace util {
 
@@ -24,16 +23,17 @@ public:
     //     }
     // }
 
-    constexpr V& operator[](const K& key) { return const_cast<V&>(const_cast<const map*>(this)->operator[](key)); }
+    constexpr V* operator[](const K& key) { return const_cast<V*>(const_cast<const map*>(this)->operator[](key)); }
 
-    constexpr const V& operator[](const K& key) const
+    constexpr const V* operator[](const K& key) const
     {
-        for (auto& item : data) {
-            if (Eq{}(item.first, key)) {
-                return item.second;
+        for (auto iter = begin(); iter != end(); ++iter) {
+            if (Eq{}(iter->first, key)) {
+                return &(iter->second);
             }
         }
-        __builtin_unreachable();
+
+        return nullptr;
     }
 
     // Iterator helper methods

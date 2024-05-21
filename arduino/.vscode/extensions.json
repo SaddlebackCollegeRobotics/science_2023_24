@@ -4,6 +4,7 @@
     "recommendations": [
         "jeff-hykin.better-cpp-syntax",
         "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.vscode-serial-monitor",
         "platformio.platformio-ide"
     ],
     "unwantedRecommendations": [

@@ -2,11 +2,10 @@
 
 namespace cmd {
 
-ret_t nop([[maybe_unused]] param_t param)
+void nop([[maybe_unused]] const String& param)
 {
-    DEBUG_LOG("Attempting to call non-existant function! (Param = %d)", param);
+    DEBUG_LOG("Attempting to call non-existant function! (Param = %s)", param.c_str());
     // TODO: Return error code
-    return {};
 }
 
 } // namespace cmd
