@@ -20,3 +20,5 @@ AccessModifierOffset: -4
 ColumnLimit: 120
 
 AllowShortFunctionsOnASingleLine: Inline
+
+SortIncludes: true
