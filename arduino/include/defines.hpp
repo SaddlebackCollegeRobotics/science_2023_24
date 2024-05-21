@@ -10,10 +10,18 @@
 #define DEBUG_LOG(msg, ...)                                                                                            \
     {                                                                                                                  \
         Serial.print("DEBUG LOG: ");                                                                                   \
-        char buf[64]{};                                                                                                \
-        snprintf(buf, 64, msg VA_ARGS(__VA_ARGS__));                                                                   \
+        char buf[256]{};                                                                                               \
+        snprintf(buf, 256, msg VA_ARGS(__VA_ARGS__));                                                                  \
         Serial.println(buf);                                                                                           \
         Serial.flush();                                                                                                \
+    }
+#define DEBUG_LOG_HEX(buf, n, msg, ...)                                                                                \
+    {                                                                                                                  \
+        char strBuf[2 * n + 1]{};                                                                                      \
+        for (int i = 0; i < (n); i++) {                                                                                \
+            snprintf(&strBuf[i * 2], 3, "%.2x", (buf)[i]);                                                             \
+        }                                                                                                              \
+        DEBUG_LOG(msg " [0x%s]", strBuf VA_ARGS(__VA_ARGS__))                                                          \
     }
 // TODO: Reset program upon assertion failure
 #define DEBUG_ASSERT(condition, msg, ...)                                                                              \

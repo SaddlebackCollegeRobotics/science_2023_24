@@ -6,6 +6,7 @@
 
 namespace cmd {
 
+// #pragma pack()
 struct CommandData
 {
     uint8_t dev;
@@ -14,7 +15,9 @@ struct CommandData
     checksum_data_t checksum;
 };
 
-static_assert(sizeof(CommandData) == 10, "CommandData must be 10 bytes large!");
+constexpr auto cmd_size = (int)sizeof(cmd::CommandData);
+
+static_assert(cmd_size == 10, "CommandData must be 10 bytes large!");
 
 enum class ParserError
 {
@@ -47,3 +50,9 @@ private:
 };
 
 } // namespace cmd
+
+#ifdef DEBUG
+#define DEBUG_LOG_CMD(cmd, msg, ...)                                                                                   \
+    DEBUG_LOG(msg " [Command (dev=%#.2hhx, func=%#.2hhx, param=%#.8lx)]" VA_ARGS(__VA_ARGS__), (char*)(&cmd.dev),      \
+              (char*)(&cmd.func), cmd.param.data)
+#endif

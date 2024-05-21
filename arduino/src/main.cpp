@@ -1,16 +1,26 @@
-#include "HardwareSerial.h"
+#include "command_parser.hpp"
 #include <Arduino.h>
 #include <defines.hpp>
+
+#ifdef DEBUG
+// #include "avr8-stub.h"
+#endif
 
 void setup()
 {
     Serial.begin(9600);
+#ifdef DEBUG
+    // debug_init();
+#endif
 }
 
 void loop()
 {
-    if (Serial.available() > 10) {
-        DEBUG_ASSERT(false, "Too much DATA (%d)", Serial.available());
-        DEBUG_LOG("Unreachable (I think)");
+    if (Serial.available() >= cmd::cmd_size) {
+        char buf[cmd::cmd_size];
+        Serial.readBytes(buf, cmd::cmd_size);
+        auto command = cmd::ParsedCommand::from_bytes(buf);
+
+        command.call();
     }
 }
