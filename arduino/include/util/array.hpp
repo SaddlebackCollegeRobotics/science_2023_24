@@ -1,6 +1,6 @@
 #pragma once
 
-#include <assert.h>
+#include "defines.hpp"
 
 namespace util {
 
@@ -17,7 +17,7 @@ public:
 
     constexpr const T& operator[](int idx) const
     {
-        assert(idx >= 0 && idx < N);
+        DEBUG_ASSERT(idx >= 0 && idx < N, "Array index out of bounds!");
         return data[idx];
     }
 
