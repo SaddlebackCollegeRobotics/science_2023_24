@@ -1,11 +1,11 @@
-#define STDINT_H // HACK: To avoid clangd errors for typedef redefinition
-#include <Adafruit_VL53L0X.h> // ToF sensors
 #include <Adafruit_SCD30.h>   // CO2 sensors
+#include <Adafruit_VL53L0X.h> // ToF sensors
 #include <Servo.h>            // PWM module . Stepper module
 #include <Stepper.h>          // Stepper Motor
 #include <Wire.h>             // Serial Comm
 
-#define DEBUG
+#include "cmds/all.hpp"
+#include <util/array.hpp>
 
 //    I2C ADDRESSES
 #define I2C_MUX_ADDRESS 0x70 // by default
@@ -16,7 +16,6 @@
 #define Stepper_DIR_PIN_LRL 11
 #define Stepper_DIR_PIN_LRR 9
 #define Stepper_DIR_PIN_Drill 13
-
 // consts
 const int scoopDown = 550;
 const int scoopUp = 1550;
@@ -65,7 +64,8 @@ int motDir = 1;
 int buttonValNew;
 int buttonValOld = 1;
 
-union arg_t {
+union arg_t
+{
     uint32_t n;
     int i;
     float f;
@@ -170,7 +170,7 @@ void scd30_get_data()
         Serial.println("");
 #endif
     } else {
-        // Serial.println("No data");
+        DEBUG_LOG("No data for scd30 tempurature sensor");
     }
 }
 
@@ -186,7 +186,7 @@ void lox_setup_continuous(Adafruit_VL53L0X& lox, uint8_t addr = lox0_ADDRESS)
         lox.startRangeContinuous();
     } else {
 #ifdef DEBUG
-        Serial.println("Failed to setup TOF sensor with " + String(addr, 16));
+        Serial.println("Failed to setup TOF sensor with " + String(addr, HEX));
 #endif
     }
 }
@@ -197,7 +197,8 @@ void lox_measure_once(Adafruit_VL53L0X& lox)
 #ifdef DEBUG
         Serial.print("Distance in mm: ");
 #endif
-        lox.readRange(); // need a container to take the data in mm, possibly float/double precision
+        lox.readRange(); // need a container to take the data in mm, possibly
+                         // float/double precision
     }
 }
 /*
