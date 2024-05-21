@@ -1,7 +1,6 @@
 #pragma once
 
 #include "command_types.hpp"
-#include "nop.hpp"
 #include "ping.hpp"
 #include "util/map.hpp"
 #include "util/strings.hpp"
