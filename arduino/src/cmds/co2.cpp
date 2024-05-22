@@ -43,6 +43,7 @@ float scd30_get_data(Scd30DataType type)
             DEBUG_LOG("Failed to read SCD30 data!");
             return NAN;
         }
+
         switch (type) {
         case Scd30DataType::CO2:
             return scd30.CO2;
@@ -85,13 +86,13 @@ void co2_init()
 {
     // Iterate through the 8 sensor multiplexed channels
     // to begin config files.
-    for (int i = 0; i < 1; ++i) {
-        // mux_set_channel(i);
-        if (scd30.begin()) {
+    for (int i = 0; i < 8; ++i) {
+        mux_set_channel(i);
+        if (!scd30.begin()) {
             // Enable continuous measurement, where we can just query for data,
             // not needing to request it each time.
-            if(scd30.setMeasurementInterval(1)) {
-                DEBUG_LOG("SCD30 continuous measurement fault");
+            if (!scd30.startContinuousMeasurement()) {
+                DEBUG_LOG("SCD30 continuous measurement fault (channel = %d)", i);
             }
         } else {
             DEBUG_LOG("Failed to initialize SCD30 sensor (channel = %d)", i);

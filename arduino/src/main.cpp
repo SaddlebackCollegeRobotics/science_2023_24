@@ -1,3 +1,4 @@
+#include "StepperMotor/StepperMotor.hpp"
 #include "cmds/all.hpp"
 #include "command_parser.hpp"
 #include "pin_defines.hpp"
@@ -6,19 +7,17 @@
 #include <Wire.h>
 #include <macros.hpp>
 
+// StepperMotor step(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step);
 void setup()
 {
     Serial.begin(9600);
 
-    cmd::init_all();
-    // digitalWrite(pins::PLATFORM_PINS[1].dir, HIGH);
+    cmd::init_hooks();
 }
 
 void loop()
 {
-    // digitalWrite(pins::PLATFORM_PINS[1].step, HIGH);
-    // delay(100);
-    // digitalWrite(pins::PLATFORM_PINS[1].step, LOW);
+    // step.update();
     // return;
 
     if (Serial.available() >= cmd::min_size) {
@@ -36,6 +35,8 @@ void loop()
             // DEBUG_LOG("command.call(): took %ld millis", millis() - before);
         }
     }
+
+    cmd::update_hooks();
 
     tasks::process();
 }

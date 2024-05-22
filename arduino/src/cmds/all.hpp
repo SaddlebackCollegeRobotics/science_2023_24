@@ -108,14 +108,19 @@ constexpr cmd_map COMMAND_MAP = {
          "platform",
          {
              {
-                 {"test_up",
+                 {"up",
                   [](const String&) {
-                      platform_up_test();
+                      platform_up();
                       return String{};
                   }},
-                 {"test_down",
+                 {"down",
                   [](const String&) {
-                      platform_down_test();
+                      platform_down();
+                      return String{};
+                  }},
+                 {"stop",
+                  [](const String&) {
+                      platform_stop();
                       return String{};
                   }},
              },
@@ -128,7 +133,7 @@ constexpr cmd_map COMMAND_MAP = {
 #undef SCOOP_MAP_ITEM
 #undef PUMP_MAP_ITEM
 
-inline void init_all()
+inline void init_hooks()
 {
     co2_init();
     tof_init();
@@ -136,6 +141,11 @@ inline void init_all()
     init_platform();
     // pump_init();
     // stepper_init();
+}
+
+inline void update_hooks()
+{
+    update_platform();
 }
 
 } // namespace cmd
