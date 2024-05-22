@@ -88,10 +88,10 @@ void co2_init()
     // to begin config files.
     for (int i = 0; i < 8; ++i) {
         mux_set_channel(i);
-        if (!scd30.begin()) {
+        if (scd30.begin()) {
             // Enable continuous measurement, where we can just query for data,
             // not needing to request it each time.
-            if (!scd30.startContinuousMeasurement()) {
+            if (!scd30.setMeasurementInterval(2)) {
                 DEBUG_LOG("SCD30 continuous measurement fault (channel = %d)", i);
             }
         } else {

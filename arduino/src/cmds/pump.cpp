@@ -1,13 +1,14 @@
-#include <Arduino.h>
-#include "WString.h"
 #include "pump.hpp"
+#include "WString.h"
+#include "pin_defines.hpp"
+#include <Arduino.h>
+#include <macros.hpp>
 
 namespace cmd {
 
 namespace {
 
 namespace pump {
-const int pumpPinArr[8] = {22, 24, 26, 28, 30, 32, 34, 36};
 unsigned long startMillis[8];
 uint8_t pumpPeriod[8];
 bool pumpsActive[8];
@@ -16,14 +17,14 @@ bool pumpsActive[8];
 void pump_run(uint8_t p_id, uint32_t t)
 {
     pump::startMillis[p_id] = millis();
-    digitalWrite(pump::pumpPinArr[p_id], HIGH);
+    digitalWrite(pins::PUMP_PINS[p_id], HIGH);
     pump::pumpPeriod[p_id] = t;
     pump::pumpsActive[p_id] = true;
 }
 
 void pump_stop(uint8_t p_id)
 {
-    digitalWrite(pump::pumpPinArr[p_id], LOW);
+    digitalWrite(pins::PUMP_PINS[p_id], LOW);
 }
 
 } // namespace
@@ -31,7 +32,7 @@ void pump_stop(uint8_t p_id)
 String pump_write(PUMP_NUM which, PumpMode mode, const String& param)
 {
     int pump_num = static_cast<int>(which);
-    
+
     switch (mode) {
     case PumpMode::START:
         pump_run(pump_num, param.toInt());
@@ -47,7 +48,7 @@ String pump_write(PUMP_NUM which, PumpMode mode, const String& param)
 void pump_init()
 {
     // set up pumps
-    for (int pin : pump::pumpPinArr) {
+    for (int pin : pins::PUMP_PINS) {
         pinMode(pin, OUTPUT);
     }
 
@@ -55,20 +56,17 @@ void pump_init()
     for (auto& iter : pump::pumpsActive) {
         iter = false;
     }
-
 }
 
 void pump_duration()
 {
     for (int i = 0; i < 8; i++) {
         if (pump::pumpsActive[i] && ((millis() - pump::startMillis[i]) >= pump::pumpPeriod[i])) {
-            digitalWrite(pump::pumpPinArr[i], LOW);
+            digitalWrite(pins::PUMP_PINS[i], LOW);
             pump::pumpsActive[i] = false;
         }
     }
-#ifdef DEBUG
-    Serial.print("Current ms - start ms: ");
-    Serial.println(millis() - pump::startMillis[7]); // only prints debugging message for pump id = 0;
-#endif
+
+    DEBUG_LOG("Current ms - start ms: ()", millis() - pump::startMillis[7]);
 }
 } // namespace cmd

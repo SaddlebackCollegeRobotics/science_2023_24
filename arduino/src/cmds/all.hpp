@@ -4,6 +4,7 @@
 #include "cmds/command_types.hpp"
 #include "cmds/ping.hpp"
 #include "cmds/platform.hpp"
+#include "cmds/pump.hpp"
 #include "cmds/scoop.hpp"
 #include "cmds/tof.hpp"
 #include "util/map.hpp"
@@ -14,7 +15,7 @@
 
 namespace cmd {
 
-constexpr int NUM_DEVICES = 16;
+constexpr int NUM_DEVICES = 22;
 constexpr int MAX_NUM_FUNCTIONS = 4;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
@@ -76,60 +77,73 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
         "pump_" #n,                                                                                                    \
             {                                                                                                          \
                 {                                                                                                      \
-                    {"start_time", [](const String& str) -> String { return scoop_read(SCOOP_NUM::SCOOP_##n, str); }}, \
+                    {"start",                                                                                          \
+                     [](const String& str) -> String {                                                                 \
+                         return pump_write(PUMP_NUM::PUMP_##n, PumpMode::START, str);                                  \
+                     }},                                                                                               \
+                    {"stop",                                                                                           \
+                     [](const String& str) -> String { return pump_write(PUMP_NUM::PUMP_##n, PumpMode::STOP, str); }}, \
                                                                                                                        \
                 },                                                                                                     \
             },                                                                                                         \
     }
 
 constexpr cmd_map COMMAND_MAP = {
-    {{
-         "root",
-         {
-             {
-                 {"ping", ping},
-                 // TODO: Hard reset function
-             },
-         },
-     },
-     CO2_MAP_ITEM(1),
-     CO2_MAP_ITEM(2),
-     CO2_MAP_ITEM(3),
-     CO2_MAP_ITEM(4),
-     CO2_MAP_ITEM(5),
-     CO2_MAP_ITEM(6),
-     CO2_MAP_ITEM(7),
-     CO2_MAP_ITEM(8),
-     //
-     TOF_MAP_ITEM(1),
-     TOF_MAP_ITEM(2),
-     //
-     SCOOP_MAP_ITEM(1),
-     SCOOP_MAP_ITEM(2),
-     SCOOP_MAP_ITEM(3),
-     SCOOP_MAP_ITEM(4),
-     {
-         "platform",
-         {
-             {
-                 {"up",
-                  [](const String&) {
-                      platform_up();
-                      return String{};
-                  }},
-                 {"down",
-                  [](const String&) {
-                      platform_down();
-                      return String{};
-                  }},
-                 {"stop",
-                  [](const String&) {
-                      platform_stop();
-                      return String{};
-                  }},
-             },
-         },
-     }},
+    {
+        {
+            "root",
+            {
+                {
+                    {"ping", ping},
+                    // TODO: Hard reset function
+                },
+            },
+        },
+        CO2_MAP_ITEM(1),
+        CO2_MAP_ITEM(2),
+        CO2_MAP_ITEM(3),
+        CO2_MAP_ITEM(4),
+        CO2_MAP_ITEM(5),
+        CO2_MAP_ITEM(6),
+        CO2_MAP_ITEM(7),
+        CO2_MAP_ITEM(8),
+        //
+        TOF_MAP_ITEM(1),
+        TOF_MAP_ITEM(2),
+        //
+        SCOOP_MAP_ITEM(1),
+        SCOOP_MAP_ITEM(2),
+        SCOOP_MAP_ITEM(3),
+        SCOOP_MAP_ITEM(4),
+        {
+            "platform",
+            {
+                {
+                    {"up",
+                     [](const String&) {
+                         platform_up();
+                         return String{};
+                     }},
+                    {"down",
+                     [](const String&) {
+                         platform_down();
+                         return String{};
+                     }},
+                    {"stop",
+                     [](const String&) {
+                         platform_stop();
+                         return String{};
+                     }},
+                },
+            },
+        },
+        PUMP_MAP_ITEM(1),
+        PUMP_MAP_ITEM(2),
+        PUMP_MAP_ITEM(3),
+        PUMP_MAP_ITEM(4),
+        PUMP_MAP_ITEM(5),
+        PUMP_MAP_ITEM(6),
+    },
 };
 
 #undef CO2_MAP_ITEM
