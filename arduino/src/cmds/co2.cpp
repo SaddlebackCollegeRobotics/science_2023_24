@@ -90,7 +90,7 @@ void co2_init()
         if (scd30.begin()) {
             // Enable continuous measurement, where we can just query for data,
             // not needing to request it each time.
-            if (scd30.setMeasurementInterval(10)) {
+            if(scd30.setMeasurementInterval(1)) {
                 DEBUG_LOG("SCD30 continuous measurement fault");
             }
         } else {
