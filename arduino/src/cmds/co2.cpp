@@ -36,7 +36,13 @@ Adafruit_SCD30 scd30;
 // Negative values represent an error
 float scd30_get_data(Scd30DataType type)
 {
-    if (scd30.dataReady() && scd30.read()) {
+    if (scd30.dataReady()) {
+        DEBUG_LOG("SCD30 dat available!");
+
+        if (scd30.read()) {
+            DEBUG_LOG("Failed to read SCD30 data!");
+            return NAN;
+        }
         switch (type) {
         case Scd30DataType::CO2:
             return scd30.CO2;
@@ -47,7 +53,7 @@ float scd30_get_data(Scd30DataType type)
         }
     }
 
-    DEBUG_LOG("Error reading SCD30 sensor data (type = %d)!", static_cast<int>(type));
+    DEBUG_LOG("No SCD30 sensor data available (type = %d)!", static_cast<int>(type));
     return NAN;
 }
 
