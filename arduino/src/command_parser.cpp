@@ -85,7 +85,7 @@ void ParsedCommand::respond(const String& msg) const
 
     auto checksum = CRC32::calculate(response.c_str(), response.length());
 
-    response += checksum;
+    response += String(checksum, HEX);
 
     Serial.println(response);
 }

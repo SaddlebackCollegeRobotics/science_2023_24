@@ -42,11 +42,9 @@ public:
 
     constexpr bool operator==(string_view rhs) const { return cmp(*this, rhs); }
 
-#ifdef DEBUG
     // Expensive fn, copying the entire buffer
     // Should only be used for debug statements
     String printable() const { return String(start_).substring(0, len_); }
-#endif
 
     // Iterator helper methods
     [[nodiscard]] constexpr const_iterator cbegin() const { return start_; }

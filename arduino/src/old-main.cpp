@@ -1,4 +1,5 @@
-#if 0
+
+// NOLINTBEGIN
 #include <Adafruit_SCD30.h>   // CO2 sensors
 #include <Adafruit_VL53L0X.h> // ToF sensors
 #include <Servo.h>            // PWM module . Stepper module
@@ -262,6 +263,7 @@ void scoop_move_increment(uint8_t s_id, uint8_t step_unsigned)
     pulseWidth[s_id] = step;
     pulseWidth[s_id] = constrain(pulseWidth[s_id], 500, 2500);
     scoop[s_id].writeMicroseconds(pulseWidth[s_id]);
+    scoop[s_id].readMicroseconds()
 }
 
 /*

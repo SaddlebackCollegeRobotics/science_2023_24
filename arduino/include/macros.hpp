@@ -1,5 +1,5 @@
 #pragma once
-#define DEBUG
+
 #ifdef DEBUG
 #include <HardwareSerial.h> // Serial
 #include <stdio.h>          // snprintf
@@ -32,6 +32,8 @@
     }
 // NOLINTEND
 #else
-#define DEBUG_LOG(msg)
-#define DEBUG_ASSERT(condition, msg)
+#define DEBUG_LOG(msg, ...)
+#define DEBUG_ASSERT(condition, msg, ...)
 #endif
+
+constexpr auto CMD_ERR_MSG = "err";
