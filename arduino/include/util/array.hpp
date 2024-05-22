@@ -46,6 +46,9 @@ public:
     T data[N]{}; // NOLINT(modernize-avoid-c-arrays)
 };
 
+template <typename T0, typename... T>
+array(T0, T...) -> array<T0, sizeof...(T) + 1>;
+
 constexpr bool in_range(int idx, int min, int max)
 {
     return idx >= min && idx <= max;
