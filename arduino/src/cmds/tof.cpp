@@ -1,5 +1,6 @@
 #include "cmds/tof.hpp"
 #include "WString.h"
+#include "pin_defines.hpp"
 #include <Adafruit_VL53L0X.h> // ToF sensors
 #include <macros.hpp>
 
@@ -50,6 +51,10 @@ String tof_read(TOF_NUM which, [[maybe_unused]] const String& param)
     return CMD_ERR_MSG;
 }
 
-void tof_init() {}
+void tof_init()
+{
+    init_tof(tof_1, pins::TOF_LOX_ADDRESSES[0]);
+    init_tof(tof_2, pins::TOF_LOX_ADDRESSES[1]);
+}
 
 } // namespace cmd

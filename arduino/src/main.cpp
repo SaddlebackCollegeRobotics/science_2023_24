@@ -1,11 +1,15 @@
+#include "cmds/all.hpp"
 #include "command_parser.hpp"
 #include "task_queue.hpp"
 #include <Arduino.h>
+#include <Wire.h>
 #include <macros.hpp>
 
 void setup()
 {
     Serial.begin(9600);
+
+    cmd::init_all();
 }
 
 void loop()
