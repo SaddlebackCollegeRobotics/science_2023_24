@@ -44,6 +44,7 @@ String tof_read(TOF_NUM which, [[maybe_unused]] const String& param)
 
     // TODO: More complete error handling
     if (tof->isRangeComplete() /*&& tof->readRangeStatus()*/) {
+        // TODO: Map range to max / min
         return String(tof->readRangeResult());
     }
 

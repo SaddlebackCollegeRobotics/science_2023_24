@@ -39,7 +39,7 @@ float scd30_get_data(Scd30DataType type)
     if (scd30.dataReady()) {
         DEBUG_LOG("SCD30 dat available!");
 
-        if (scd30.read()) {
+        if (!scd30.read()) {
             DEBUG_LOG("Failed to read SCD30 data!");
             return NAN;
         }
