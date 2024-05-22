@@ -3,6 +3,7 @@
 #include "cmds/co2.hpp"
 #include "cmds/command_types.hpp"
 #include "cmds/ping.hpp"
+#include "cmds/platform.hpp"
 #include "cmds/scoop.hpp"
 #include "cmds/tof.hpp"
 #include "util/map.hpp"
@@ -78,33 +79,48 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
     }
 
 constexpr cmd_map COMMAND_MAP = {
-    {
-        {
-            "root",
-            {
-                {
-                    {"ping", ping},
-                    // TODO: Hard reset function
-                },
-            },
-        },
-        CO2_MAP_ITEM(1),
-        CO2_MAP_ITEM(2),
-        CO2_MAP_ITEM(3),
-        CO2_MAP_ITEM(4),
-        CO2_MAP_ITEM(5),
-        CO2_MAP_ITEM(6),
-        CO2_MAP_ITEM(7),
-        CO2_MAP_ITEM(8),
-        //
-        TOF_MAP_ITEM(1),
-        TOF_MAP_ITEM(2),
-        //
-        SCOOP_MAP_ITEM(1),
-        SCOOP_MAP_ITEM(2),
-        SCOOP_MAP_ITEM(3),
-        SCOOP_MAP_ITEM(4),
-    },
+    {{
+         "root",
+         {
+             {
+                 {"ping", ping},
+                 // TODO: Hard reset function
+             },
+         },
+     },
+     CO2_MAP_ITEM(1),
+     CO2_MAP_ITEM(2),
+     CO2_MAP_ITEM(3),
+     CO2_MAP_ITEM(4),
+     CO2_MAP_ITEM(5),
+     CO2_MAP_ITEM(6),
+     CO2_MAP_ITEM(7),
+     CO2_MAP_ITEM(8),
+     //
+     TOF_MAP_ITEM(1),
+     TOF_MAP_ITEM(2),
+     //
+     SCOOP_MAP_ITEM(1),
+     SCOOP_MAP_ITEM(2),
+     SCOOP_MAP_ITEM(3),
+     SCOOP_MAP_ITEM(4),
+     {
+         "platform",
+         {
+             {
+                 {"test_up",
+                  [](const String&) {
+                      platform_up_test();
+                      return String{};
+                  }},
+                 {"test_down",
+                  [](const String&) {
+                      platform_down_test();
+                      return String{};
+                  }},
+             },
+         },
+     }},
 };
 
 #undef CO2_MAP_ITEM
@@ -117,6 +133,7 @@ inline void init_all()
     co2_init();
     tof_init();
     scoop_init();
+    init_platform();
     // pump_init();
     // stepper_init();
 }

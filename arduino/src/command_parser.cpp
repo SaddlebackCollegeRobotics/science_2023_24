@@ -29,12 +29,14 @@ ParsedCommand ParsedCommand::from_str(const char* str)
     checksum_data_t checksum_calc =
         CRC32::calculate(str, str_data[0].length() + str_data[1].length() + str_data[2].length() + 3);
 
+#ifndef NO_CHECKSUM
     // Check whether the sums match
     if (checksum_calc != data.checksum) {
         DEBUG_LOG("Checksum mismatch :: Expected = %#.8lx, Received = %#.8lx", checksum_calc, data.checksum);
         err = ParserError::CHECKSUM_MISMATCH;
         return {data, err};
     }
+#endif
 
     if (COMMAND_MAP[data.dev] == nullptr) {
         DEBUG_LOG("Invalid device name (\"%s\")", data.dev.c_str());
