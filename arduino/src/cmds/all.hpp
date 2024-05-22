@@ -54,7 +54,14 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
             {                                                                                                          \
                 {                                                                                                      \
                     {"read", [](const String& str) -> String { return scoop_read(SCOOP_NUM::SCOOP_##n, str); }},       \
-                    {"write", [](const String& str) -> String { return scoop_write(SCOOP_NUM::SCOOP_##n, str); }},     \
+                    {"up",                                                                                             \
+                     [](const String& str) -> String {                                                                 \
+                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::UP, str);                                 \
+                     }},                                                                                               \
+                    {"down",                                                                                           \
+                     [](const String& str) -> String {                                                                 \
+                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::DOWN, str);                               \
+                     }},                                                                                               \
                 },                                                                                                     \
             },                                                                                                         \
     }
