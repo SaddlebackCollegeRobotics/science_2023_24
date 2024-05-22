@@ -12,8 +12,9 @@ namespace {
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 util::array<Servo, 4> scoops = {};
 
-const int scoopDown = 550;
-const int scoopUp = 1550;
+const int scoopLevel = 1600;
+const int scoopDown = 680;
+const int scoopUp = 1750;
 
 void scoop_down(Servo& scoop)
 {
@@ -23,6 +24,11 @@ void scoop_down(Servo& scoop)
 void scoop_up(Servo& scoop)
 {
     scoop.writeMicroseconds(scoopUp);
+}
+
+void scoop_level(Servo& scoop)
+{
+    scoop.writeMicroseconds(scoopLevel);
 }
 
 } // namespace
@@ -44,6 +50,9 @@ String scoop_write(SCOOP_NUM which, ScoopMode mode, const String& param)
     case ScoopMode::DOWN:
         scoop_down(scoops[scoop_num]);
         return {};
+    case ScoopMode::LEVEL:
+        scoop_level(scoops[scoop_num]);
+        return {};
     }
 
     return {};
@@ -55,7 +64,9 @@ void scoop_init()
         scoops[i].attach(pins::SCOOP_PINS[i]);
     }
 
-    // TODO: Move scoops up upon initialization?
+    for (int i = 0; i < scoops.size(); ++i) {
+        scoops[i].writeMicroseconds(scoopLevel);
+    }
 }
 
 } // namespace cmd

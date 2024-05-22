@@ -16,7 +16,8 @@ enum class SCOOP_NUM
 enum class ScoopMode
 {
     UP,
-    DOWN
+    DOWN,
+    LEVEL
 };
 
 String scoop_read(SCOOP_NUM which, const String& param);

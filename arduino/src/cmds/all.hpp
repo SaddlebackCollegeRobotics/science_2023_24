@@ -62,7 +62,11 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
                     {"down",                                                                                           \
                      [](const String& str) -> String {                                                                 \
                          return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::DOWN, str);                               \
-                     }},                                                                                               \
+                     }},\
+                    {"level",\
+                     [](const String& str) -> String {\
+                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::LEVEL, str);\
+                     }},                                                                                                          \
                 },                                                                                                     \
             },                                                                                                         \
     }
