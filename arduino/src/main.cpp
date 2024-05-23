@@ -1,25 +1,28 @@
+#define DEBUG
+
 #include "StepperMotor/StepperMotor.hpp"
 #include "cmds/all.hpp"
 #include "command_parser.hpp"
 #include "pin_defines.hpp"
 #include "task_queue.hpp"
 #include <Arduino.h>
+#include <TimerOne.h>
 #include <Wire.h>
 #include <macros.hpp>
 
-// StepperMotor step(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step);
 void setup()
 {
     Serial.begin(9600);
 
     cmd::init_hooks();
+
+    Timer1.initialize(2000);
+
+    // Timer1.attachInterrupt([] { Serial.println("INTERRUPTED!"); });
 }
 
 void loop()
 {
-    // step.update();
-    // return;
-
     if (Serial.available() >= cmd::min_size) {
         // auto before = millis();
         auto str = Serial.readStringUntil('\n');

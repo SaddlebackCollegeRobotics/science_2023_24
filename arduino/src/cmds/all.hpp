@@ -63,15 +63,11 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
                     {"down",                                                                                           \
                      [](const String& str) -> String {                                                                 \
                          return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::DOWN, str);                               \
-                     }},\
-                    {"level",\
-                     [](const String& str) -> String {\
-                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::LEVEL, str);\
-                     }},\                
-                    {"adjust",\
-                     [](const String& str) -> String {\
-                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::ADJUST, str);\
-                    }},                                                                                         \
+                     }},                                                                                               \
+                    {"level",                                                                                          \
+                     [](const String& str) -> String {                                                                 \
+                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::LEVEL, str);                              \
+                     }},                                                                                               \
                 },                                                                                                     \
             },                                                                                                         \
     }
@@ -154,6 +150,9 @@ constexpr cmd_map COMMAND_MAP = {
 #undef TOF_MAP_ITEM
 #undef SCOOP_MAP_ITEM
 #undef PUMP_MAP_ITEM
+
+// TODO: Handle these hooks better with constexpr, or macros
+// TODO: Better map registration. Maybe a class; overhead is negligible.
 
 inline void init_hooks()
 {

@@ -10,8 +10,8 @@
 #define DEBUG_LOG(msg, ...)                                                                                            \
     {                                                                                                                  \
         Serial.print("DEBUG: ");                                                                                       \
-        char buf[256]{};                                                                                               \
-        snprintf(buf, 256, msg VA_ARGS(__VA_ARGS__));                                                                  \
+        char buf[64]{};                                                                                                \
+        snprintf(buf, 64, msg VA_ARGS(__VA_ARGS__));                                                                   \
         Serial.println(buf);                                                                                           \
         Serial.flush();                                                                                                \
     }
