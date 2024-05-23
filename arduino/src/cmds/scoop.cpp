@@ -31,6 +31,11 @@ void scoop_level(Servo& scoop)
     scoop.writeMicroseconds(scoopLevel);
 }
 
+void scoop_adjust(Servo& scoop, int degrees)
+{
+    scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees*7.41));
+}
+
 } // namespace
 
 String scoop_read(SCOOP_NUM which, const String& param)
@@ -53,6 +58,9 @@ String scoop_write(SCOOP_NUM which, ScoopMode mode, const String& param)
     case ScoopMode::LEVEL:
         scoop_level(scoops[scoop_num]);
         return {};
+    case ScoopMode::ADJUST:
+        // param.toInt() works using return atol(buffer)
+        scoop_adjust(scoops[scoop_num], param.toInt());
     }
 
     return {};

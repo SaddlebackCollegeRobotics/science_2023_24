@@ -16,7 +16,7 @@
 namespace cmd {
 
 constexpr int NUM_DEVICES = 22;
-constexpr int MAX_NUM_FUNCTIONS = 4;
+constexpr int MAX_NUM_FUNCTIONS = 5;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
 
@@ -67,7 +67,11 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
                     {"level",\
                      [](const String& str) -> String {\
                          return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::LEVEL, str);\
-                     }},                                                                                                          \
+                     }},\                
+                    {"adjust",\
+                     [](const String& str) -> String {\
+                         return scoop_write(SCOOP_NUM::SCOOP_##n, ScoopMode::ADJUST, str);\
+                    }},                                                                                         \
                 },                                                                                                     \
             },                                                                                                         \
     }
