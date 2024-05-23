@@ -6,8 +6,9 @@
 #include "pin_defines.hpp"
 #include "task_queue.hpp"
 #include <Arduino.h>
-#include <TimerOne.h>
+#include <Servo.h>
 #include <Wire.h>
+#include <arduino-timer.h>
 #include <macros.hpp>
 
 void setup()
@@ -15,10 +16,6 @@ void setup()
     Serial.begin(9600);
 
     cmd::init_hooks();
-
-    Timer1.initialize(2000);
-
-    // Timer1.attachInterrupt([] { Serial.println("INTERRUPTED!"); });
 }
 
 void loop()
@@ -41,5 +38,5 @@ void loop()
 
     cmd::update_hooks();
 
-    tasks::process();
+    task_timer.tick();
 }

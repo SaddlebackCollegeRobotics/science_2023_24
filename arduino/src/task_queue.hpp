@@ -1,5 +1,8 @@
 #pragma once
 
+#include <arduino-timer.h>
+
+extern Timer<10> task_timer;
 namespace tasks {
 
 // Returns: a handle to the added task, for possible cancelation later

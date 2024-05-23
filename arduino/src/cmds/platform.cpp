@@ -13,9 +13,9 @@ namespace {
 // TODO
 // constexpr uint32_t STEPS_PER_REV = 200;
 
-StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step, 2);
-StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, 2);
-StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step);
+StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step, 7);
+StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, 7);
+StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step, 7);
 
 // Handler for platform limit switches
 // Currently just checks whether any platform switch is high, and if it is, stops the motors
@@ -47,8 +47,8 @@ bool handle_limit_switches()
 // Moves the platform down 5 revolutions
 void platform_up()
 {
-    lowering_platform_left.setDirection(StepperMotor::Direction::NEGATIVE);
-    lowering_platform_right.setDirection(StepperMotor::Direction::NEGATIVE);
+    lowering_platform_left.setDirection(StepperMotor::Direction::POSITIVE);
+    lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
 
     lowering_platform_left.start();
     lowering_platform_right.start();
@@ -57,8 +57,8 @@ void platform_up()
 // Moves the platform up for 5 revolutions
 void platform_down()
 {
-    lowering_platform_left.setDirection(StepperMotor::Direction::POSITIVE);
-    lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
+    lowering_platform_left.setDirection(StepperMotor::Direction::NEGATIVE);
+    lowering_platform_right.setDirection(StepperMotor::Direction::NEGATIVE);
 
     lowering_platform_left.start();
     lowering_platform_right.start();

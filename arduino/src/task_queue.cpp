@@ -4,6 +4,8 @@
 
 constexpr int MAX_TASKS = 32;
 
+Timer<10> task_timer;
+
 namespace {
 
 using callback_t = void (*)();
