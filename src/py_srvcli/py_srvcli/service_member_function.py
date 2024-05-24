@@ -1,4 +1,7 @@
+from zlib import crc32
+from crc import Crc32
 from science_interfaces.srv import ScienceRPC
+from std_msgs.msg import Float32MultiArray
 
 import rclpy
 from rclpy.node import Node
@@ -10,18 +13,57 @@ class ScienceServer(Node):
 
     def __init__(self):
 
-        super().__init__('science_server')
+        super().__init__("science_server")
 
-        self.srv = self.create_service(ScienceRPC, 'science_rpc', self.science_rpc_callback)
+        self.srv = self.create_service(
+            ScienceRPC, "science_rpc", self.science_rpc_callback
+        )
 
-        # self.serial = Serial('/dev/ttyACM0', 9600, timeout=1)
+        self._arduino_serial = Serial("/dev/ttyACM0", 9600, timeout=1)
 
     def science_rpc_callback(self, request, response):
-        
-        command = str(request.cmd_address) + ' ' + str(request.value)
-        self.get_logger().info(f'Incoming request: {command}')
-        # self.serial.write(command)
 
+        command_str = (
+            ",".join([request.device, request.function, request.parameter]) + ","
+        )
+        command_bytes = bytes(command_str, encoding="utf-8")
+        checksum = hex(crc32(command_bytes))
+        self.get_logger().info(
+            f'Incoming request: "{command_str}" (checksum = {checksum})'
+        )
+
+        final_cmd_str = command_str + str(checksum) + "\n"
+        final_cmd_bytes = bytes(final_cmd_str, encoding="utf-8")
+
+        self.get_logger().info(f'Sending data: "{final_cmd_str}"')
+
+        self._arduino_serial.write(final_cmd_bytes)
+
+        ret_data = str(self._arduino_serial.readline()).split(",")
+
+        # Arduino did not respond, so command was invalid
+        if len(ret_data) < 4:
+            response.ret = "INVALID"
+            return response
+
+        # First field has leading "b'"
+        # Forth field has a trailing "\\n'"
+        ret_data[0] = ret_data[0].removeprefix("b'")
+        ret_data[3] = ret_data[3].removesuffix("\\n'")
+
+        self.get_logger().info(f'Received data: "{ret_data}"')
+
+        # Validate the checksum
+        recv_checksum = int(ret_data[3], base=16)
+        recv_calc_checksum = crc32(
+            bytes(",".join(ret_data[:3]) + ",", encoding="utf-8")
+        )
+
+        if recv_calc_checksum != recv_checksum:
+            response.ret = "BAD CHECKSUM"
+            return response
+
+        response.ret = ret_data[2]
         return response
 
 
@@ -33,10 +75,10 @@ def main():
     try:
         rclpy.spin(science_server)
     except KeyboardInterrupt:
-        print('Shutting down...')    
+        print("Shutting down...")
 
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
