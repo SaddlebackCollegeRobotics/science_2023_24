@@ -137,6 +137,12 @@ constexpr cmd_map COMMAND_MAP = {
                          platform_stop();
                          return String{};
                      }},
+                    {"limit_input",
+                        set_platform_overwrite
+                        
+
+
+                    }
                 },
             },
         },

@@ -2,6 +2,7 @@
 #include "Stepper.h"
 #include "StepperMotor/StepperMotor.hpp"
 #include "WString.h"
+#include "macros.hpp"
 #include "pin_defines.hpp"
 #include "pins_arduino.h"
 #include <Arduino.h>
@@ -21,11 +22,16 @@ bool left_platform_limit = false;
 bool right_platform_limit = false;
 bool drill_platform_limit = false;
 
+bool platform_limit_overwrite = false;
+bool drill_limit_overwrite = false;
+
 // Handler for platform limit switches
 // Currently just checks whether any platform switch is high, and if it is, stops the motors
 // Returns whether any switches were high
 bool handle_limit_switches()
 {
+    if(platform_limit_overwrite) {return false;}
+
     static bool detect_pressed = false;
     // TODO: Option to disable. We don't want them stuck at comp!
     left_platform_limit = static_cast<bool>(digitalRead(pins::PLATFORM_LIMIT_SWITCHES.left));
@@ -62,6 +68,12 @@ bool handle_limit_switches()
     return right_platform_limit || left_platform_limit;
 }
 
+bool handle_platform_overwrite(bool mode) 
+{
+    platform_limit_overwrite = mode;
+    return platform_limit_overwrite;
+}
+
 } // namespace
 
 // Moves the platform down 5 revolutions
@@ -91,6 +103,22 @@ void platform_stop()
 {
     lowering_platform_left.stop();
     lowering_platform_right.stop();
+}
+
+String set_platform_overwrite(const String & mode) 
+{
+    if(mode.equals("on"))
+    {
+        handle_platform_overwrite(true);
+    }
+    else if(mode.equals("off")){
+        handle_platform_overwrite(false);
+    }
+    else 
+    {
+        return CMD_ERR_MSG;
+    }
+    return {};
 }
 
 void init_platform()
