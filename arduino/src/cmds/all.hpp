@@ -121,7 +121,7 @@ constexpr cmd_map COMMAND_MAP = {
         SCOOP_MAP_ITEM(4),
         // Platform management
         {
-            "platform",
+            "platform_lower",
             {
                 {
                     {"up",
