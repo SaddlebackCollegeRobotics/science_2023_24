@@ -123,29 +123,25 @@ constexpr cmd_map COMMAND_MAP = {
         {
             "platform_lower",
             {
-                {
-                    {"up",
-                     [](const String&) {
-                         platform_up();
-                         return String{};
-                     }},
-                    {"down",
-                     [](const String&) {
-                         platform_down();
-                         return String{};
-                     }},
-                    {"stop",
-                     [](const String&) {
-                         platform_stop();
-                         return String{};
-                     }},
-                    {"limit_input",
-                        set_platform_overwrite
-                        
-
-
-                    }
-                },
+                {{"up",
+                  [](const String&) {
+                      platform_up();
+                      return String{};
+                  }},
+                 {"down",
+                  [](const String&) {
+                      platform_down();
+                      return String{};
+                  }},
+                 {"stop",
+                  [](const String&) {
+                      platform_stop();
+                      return String{};
+                  }},
+                 {
+                     "limit_input",
+                     set_platform_overwrite,
+                 }},
             },
         },
         //
