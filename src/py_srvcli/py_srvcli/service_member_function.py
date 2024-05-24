@@ -1,5 +1,4 @@
 from zlib import crc32
-from crc import Crc32
 from rcl_interfaces.srv import DescribeParameters
 
 import rclpy
