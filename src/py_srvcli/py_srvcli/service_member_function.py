@@ -1,5 +1,6 @@
 from zlib import crc32
 from rcl_interfaces.srv import DescribeParameters
+from rcl_interfaces.msg import ParameterDescriptor
 
 import rclpy
 from rclpy.node import Node
@@ -39,7 +40,7 @@ class ScienceServer(Node):
 
         # Arduino did not respond, so command was invalid
         if len(ret_data) < 4:
-            response.descriptors[0].name = "INVALID"
+            response.descriptors = [ParameterDescriptor(name="INVALID")]
             return response
 
         # First field has leading "b'"
@@ -56,10 +57,10 @@ class ScienceServer(Node):
         )
 
         if recv_calc_checksum != recv_checksum:
-            response.descriptors[0].name = "BAD CHECKSUM"
+            response.descriptors = [ParameterDescriptor(name="BAD CHECKSUM")]
             return response
 
-        response.descriptors[0].name = ret_data[2]
+        response.descriptors = [ParameterDescriptor(name=ret_data[2])]
         return response
 
 
