@@ -4,6 +4,7 @@
 #include "cmds/command_types.hpp"
 #include "cmds/drill.hpp"
 #include "cmds/drill_sensors.hpp"
+#include "cmds/drill_platform.hpp"
 #include "cmds/ping.hpp"
 #include "cmds/platform.hpp"
 #include "cmds/pump.hpp"
@@ -17,7 +18,7 @@
 
 namespace cmd {
 
-constexpr int NUM_DEVICES = 24;
+constexpr int NUM_DEVICES = 25;
 constexpr int MAX_NUM_FUNCTIONS = 5;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
@@ -144,6 +145,29 @@ constexpr cmd_map COMMAND_MAP = {
               }}},
         },
         //
+        {
+            "drill_lower",
+            {{{"up",
+               [](const String&) {
+                   drill_platform_up();
+                   return String{};
+               }},
+              {"down",
+               [](const String&) {
+                   drill_platform_down();
+                   return String{};
+               }},
+              {"stop",
+               [](const String&) {
+                   drill_platform_stop();
+                   return String{};
+               }},
+              {
+                  "limit_input",
+                  set_drill_platform_overwrite,
+              }}},
+        },
+        //
         PUMP_MAP_ITEM(1),
         PUMP_MAP_ITEM(2),
         PUMP_MAP_ITEM(3),
@@ -183,6 +207,7 @@ inline void init_hooks()
     tof_init();
     scoop_init();
     init_platform();
+    init_drill_platform();
     // pump_init();
     // stepper_init();
 }
@@ -190,6 +215,7 @@ inline void init_hooks()
 inline void update_hooks()
 {
     update_platform();
+    update_drill_platform();
 }
 
 } // namespace cmd
