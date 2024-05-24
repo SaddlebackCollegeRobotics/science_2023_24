@@ -2,6 +2,7 @@
 
 #include "cmds/co2.hpp"
 #include "cmds/command_types.hpp"
+#include "cmds/drill_sensors.hpp"
 #include "cmds/ping.hpp"
 #include "cmds/platform.hpp"
 #include "cmds/pump.hpp"
@@ -15,7 +16,7 @@
 
 namespace cmd {
 
-constexpr int NUM_DEVICES = 22;
+constexpr int NUM_DEVICES = 23;
 constexpr int MAX_NUM_FUNCTIONS = 5;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
@@ -118,8 +119,9 @@ constexpr cmd_map COMMAND_MAP = {
         SCOOP_MAP_ITEM(2),
         SCOOP_MAP_ITEM(3),
         SCOOP_MAP_ITEM(4),
+        // Platform management
         {
-            "platform",
+            "platform_lower",
             {
                 {
                     {"up",
@@ -146,12 +148,21 @@ constexpr cmd_map COMMAND_MAP = {
                 },
             },
         },
+        //
         PUMP_MAP_ITEM(1),
         PUMP_MAP_ITEM(2),
         PUMP_MAP_ITEM(3),
         PUMP_MAP_ITEM(4),
         PUMP_MAP_ITEM(5),
         PUMP_MAP_ITEM(6),
+        // Drill sensors
+        {
+            "drill_sensors",
+            {{
+                {"read_temp", get_drill_temp},
+                {"read_moisture", get_drill_moisture},
+            }},
+        },
     },
 };
 
