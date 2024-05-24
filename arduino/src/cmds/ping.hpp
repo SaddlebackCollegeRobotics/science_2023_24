@@ -7,4 +7,6 @@ namespace cmd {
 
 String ping(const String&);
 
+String hard_reset(const String&);
+
 } // namespace cmd
