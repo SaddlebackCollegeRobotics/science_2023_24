@@ -31,7 +31,7 @@ class ArduinoManager(Node):
         self.cli = self.create_client(DescribeParameters, "science_rpc")
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("ScienceRPC service not available, waiting again...")
-        self.req = cli.Request()
+        self.req = self.cli.Request()
 
         self.msg = Float32MultiArray()
 
