@@ -1,11 +1,10 @@
+from science_interfaces.msg import CO2Data
+from science_interfaces.srv import ScienceRPC
+
 import rclpy
 import serial
 from rclpy.node import Node, Publisher
 import json
-
-from std_msgs.msg import Float32MultiArray
-
-ser = serial.Serial('/dev/ttyUSB0')
 
 
 class ArduinoManager(Node):
@@ -13,42 +12,49 @@ class ArduinoManager(Node):
     publishers: dict[str, Publisher]
 
     def __init__(self):
-        super().__init__('arduino_manager')
+        super().__init__("arduino_manager")
 
         self.co2_sensor_publishers = {
-            'scd_1': self.create_publisher(Float32MultiArray, '/co2_sensor_1', 10),
-            'scd_2': self.create_publisher(Float32MultiArray, '/co2_sensor_2', 10),
-            'scd_3': self.create_publisher(Float32MultiArray, '/co2_sensor_3', 10),
-            'scd_4': self.create_publisher(Float32MultiArray, '/co2_sensor_4', 10),
-            'scd_5': self.create_publisher(Float32MultiArray, '/co2_sensor_5', 10),
-            'scd_6': self.create_publisher(Float32MultiArray, '/co2_sensor_6', 10),
-            'scd_7': self.create_publisher(Float32MultiArray, '/co2_sensor_7', 10),
-            'scd_8': self.create_publisher(Float32MultiArray, '/co2_sensor_8', 10),
+            "co2_1": self.create_publisher(CO2Data, "/co2_sensor_1", 10),
+            "co2_2": self.create_publisher(CO2Data, "/co2_sensor_2", 10),
+            "co2_3": self.create_publisher(CO2Data, "/co2_sensor_3", 10),
+            "co2_4": self.create_publisher(CO2Data, "/co2_sensor_4", 10),
+            "co2_5": self.create_publisher(CO2Data, "/co2_sensor_5", 10),
+            "co2_6": self.create_publisher(CO2Data, "/co2_sensor_6", 10),
+            "co2_7": self.create_publisher(CO2Data, "/co2_sensor_7", 10),
+            "co2_8": self.create_publisher(CO2Data, "/co2_sensor_8", 10),
         }
 
         self.timer = self.create_timer(2, self.read_serial)
         self.timestamp = 0
 
+        self.cli = self.create_client(ScienceRPC, "science_rpc")
+        while not self.cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info("ScienceRPC service not available, waiting again...")
+        self.req = cli.Request()
+
+        self.msg = CO2Data()
+
+    def send_request(self, device, function, parameter):
+        self.req.device = device
+        self.req.function = function
+        self.req.parameter = parameter
+        self.future = self.cli.call_async(self.req)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
+
     def read_serial(self):
-        data = ser.readline()
 
-        address, message = data.decode().split('|')
-
-        if (address in self.co2_sensor_publishers):
-            msg = Float32MultiArray()
-            self.timestamp += 2
-
+        for sens_dev, pub in self.co2_sensor_publishers.items():
             try:
-                temperature, humidity, co2 = message.split(',')
-
-                msg.data.append(temperature)
-                msg.data.append(humidity)
-                msg.data.append(co2)
-                msg.data.append(self.timestamp)
-
-                self.co2_sensor_publishers[address].publish(msg)
-            except:
-                print('Could not parse json.')
+                self.msg.co2 = float(self.send_request(sens_dev, "read_co2", ""))
+                self.msg.humidity = float(self.send_request(sens_dev, "read_temp", ""))
+                self.msg.temperature = float(
+                    self.send_request(sens_dev, "read_humid", "")
+                )
+                pub.publish(self.msg)
+            except TypeError as e:
+                self.get_logger().warn(f"Invalid cmd response: ({e})")
 
 
 def main(args=None):
@@ -62,5 +68,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

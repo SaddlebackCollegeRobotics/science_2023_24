@@ -91,7 +91,7 @@ void ParsedCommand::respond(const String& msg) const
 
     response += '\n';
 
-    Serial.println(response);
+    Serial.print(response);
 }
 
 } // namespace cmd

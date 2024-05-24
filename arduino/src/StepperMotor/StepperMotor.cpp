@@ -13,7 +13,7 @@ struct stepper_info
 {
     bool enabled = false;
     pins::pin_t pin = 0;
-    uint64_t num_steps = 0;
+    int num_steps = 0;
     StepperMotor::Direction dir;
 };
 
@@ -102,7 +102,7 @@ void StepperMotor::stop()
     digitalWrite(enable_pin_, HIGH);
 }
 
-uint64_t StepperMotor::getNumSteps() const
+int StepperMotor::getNumSteps() const
 {
     return steppers_info[id_].num_steps;
 }
