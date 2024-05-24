@@ -99,7 +99,7 @@ constexpr cmd_map COMMAND_MAP = {
             {
                 {
                     {"ping", ping},
-                    // TODO: Hard reset function
+                    {"reset", hard_reset},
                 },
             },
         },
