@@ -17,29 +17,49 @@ StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_P
 StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, 7);
 StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step, 7);
 
+bool left_platform_limit = false;
+bool right_platform_limit = false;
+bool drill_platform_limit = false;
+
 // Handler for platform limit switches
 // Currently just checks whether any platform switch is high, and if it is, stops the motors
 // Returns whether any switches were high
 bool handle_limit_switches()
 {
+    static bool detect_pressed = false;
     // TODO: Option to disable. We don't want them stuck at comp!
-    bool left_switch_val = static_cast<bool>(digitalRead(pins::PLATFORM_LIMIT_SWITCHES.left));
-    bool right_switch_val = static_cast<bool>(digitalRead(pins::PLATFORM_LIMIT_SWITCHES.right));
-    if (left_switch_val || right_switch_val) {
-        // Stop platform motors
-        lowering_platform_left.stop();
-        lowering_platform_right.stop();
-        return false;
+    left_platform_limit = static_cast<bool>(digitalRead(pins::PLATFORM_LIMIT_SWITCHES.left));
+    right_platform_limit = static_cast<bool>(digitalRead(pins::PLATFORM_LIMIT_SWITCHES.right));
+
+    // Only actually stop the motors the first time we detect switches are pressed down
+    // we don't want to stop the motors from moving DOWN, only stop UPward movements.
+    if (left_platform_limit || right_platform_limit) {
+        if (!detect_pressed) {
+            detect_pressed = true;
+            lowering_platform_left.stop();
+            lowering_platform_right.stop();
+            return false;
+        }
+    } else if (detect_pressed) {
+        detect_pressed = false;
     }
 
-    bool drill_switch_val = static_cast<bool>(digitalRead(pins::DRILL_PLATFORM_LIMIT_SWITCH));
+    //!!! Old implementation
+    // if (left_platform_limit || right_platform_limit) {
+    //     // Stop platform motors
+    //     lowering_platform_left.stop();
+    //     lowering_platform_right.stop();
+    //     return false;
+    // }
 
-    if (drill_switch_val) {
-        drill_platform.stop();
-        return false;
-    }
+    // bool drill_switch_val = static_cast<bool>(digitalRead(pins::DRILL_PLATFORM_LIMIT_SWITCH));
 
-    return false;
+    // if (drill_switch_val) {
+    //     drill_platform.stop();
+    //     return false;
+    // }
+
+    return right_platform_limit || left_platform_limit;
 }
 
 } // namespace
@@ -47,11 +67,14 @@ bool handle_limit_switches()
 // Moves the platform down 5 revolutions
 void platform_up()
 {
-    lowering_platform_left.setDirection(StepperMotor::Direction::POSITIVE);
-    lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
+    // Only allow upward movement when limit switches are not pressed
+    if (!left_platform_limit && !right_platform_limit) {
+        lowering_platform_left.setDirection(StepperMotor::Direction::POSITIVE);
+        lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
 
-    lowering_platform_left.start();
-    lowering_platform_right.start();
+        lowering_platform_left.start();
+        lowering_platform_right.start();
+    }
 }
 
 // Moves the platform up for 5 revolutions
