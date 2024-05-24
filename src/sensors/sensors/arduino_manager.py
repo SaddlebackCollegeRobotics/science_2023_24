@@ -36,9 +36,9 @@ class ArduinoManager(Node):
         self.msg = Float32MultiArray()
 
     def send_request(self, device, function, parameter):
-        self.req.device = device
-        self.req.function = function
-        self.req.parameter = parameter
+        self.req.names[0] = device
+        self.req.names[1] = function
+        self.req.names[2] = parameter
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
