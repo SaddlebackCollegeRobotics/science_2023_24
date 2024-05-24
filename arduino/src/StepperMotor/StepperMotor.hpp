@@ -22,6 +22,8 @@ public:
     void start();
     void stop();
 
+    uint64_t getNumSteps() const;
+
 private:
     pins::pin_t dir_pin_;
     pins::pin_t step_pin_;

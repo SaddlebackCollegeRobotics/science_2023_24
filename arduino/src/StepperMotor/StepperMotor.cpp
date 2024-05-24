@@ -13,6 +13,8 @@ struct stepper_info
 {
     bool enabled = false;
     pins::pin_t pin = 0;
+    uint64_t num_steps = 0;
+    StepperMotor::Direction dir;
 };
 
 util::array<stepper_info, NUM_STEPPERS> steppers_info{};
@@ -30,6 +32,12 @@ bool stepper_pwm_callback(void*)
         }
 
         // DEBUG_LOG("Stepping motor %d (state = %s)", stepper.pin, stepper.state ? "HIGH" : "LOW");
+        
+        if (stepper.dir == StepperMotor::Direction::POSITIVE) {
+            stepper.num_steps++;
+        } else {
+            stepper.num_steps--;
+        }
 
         digitalWrite(stepper.pin, HIGH);
         delayMicroseconds(200);
@@ -51,7 +59,7 @@ StepperMotor::StepperMotor(pins::pin_t dir_pin, pins::pin_t step_pin, pins::pin_
     , step_freq_(1000 / step_period_millis)
     , id_(s_idx++)
 {
-    steppers_info[id_] = {.enabled = false, .pin = step_pin};
+    steppers_info[id_] = {.enabled = false, .pin = step_pin, .num_steps = 0, .dir = Direction::POSITIVE};
     pinMode(dir_pin, OUTPUT);
     pinMode(step_pin, OUTPUT);
 
@@ -70,6 +78,7 @@ StepperMotor::StepperMotor(pins::pin_t dir_pin, pins::pin_t step_pin, pins::pin_
 void StepperMotor::setDirection(Direction dir)
 {
     dir_ = dir;
+    steppers_info[id_].dir = dir;
 
     switch (dir) {
     case Direction::POSITIVE:
@@ -91,4 +100,9 @@ void StepperMotor::stop()
 {
     steppers_info[id_].enabled = false;
     digitalWrite(enable_pin_, HIGH);
+}
+
+uint64_t StepperMotor::getNumSteps() const
+{
+    return steppers_info[id_].num_steps;
 }

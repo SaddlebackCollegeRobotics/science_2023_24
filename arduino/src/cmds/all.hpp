@@ -20,7 +20,7 @@
 namespace cmd {
 
 constexpr int NUM_DEVICES = 26;
-constexpr int MAX_NUM_FUNCTIONS = 5;
+constexpr int MAX_NUM_FUNCTIONS = 6;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
 
@@ -139,7 +139,12 @@ constexpr cmd_map COMMAND_MAP = {
               {
                   "limit_input",
                   set_platform_overwrite,
+              },
+              {
+                  "read",
+                  read_platform_steps,
               }}},
+              
         },
         //
         {

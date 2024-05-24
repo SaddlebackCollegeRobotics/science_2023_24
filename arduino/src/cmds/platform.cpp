@@ -110,6 +110,11 @@ String set_platform_overwrite(const String& mode)
     return {};
 }
 
+String read_platform_steps(const String& /*unused*/)
+{
+    return String((unsigned long)lowering_platform_left.getNumSteps()) + " + " + String((unsigned long)lowering_platform_right.getNumSteps());
+}
+
 void init_platform()
 {
     // Limit switches
