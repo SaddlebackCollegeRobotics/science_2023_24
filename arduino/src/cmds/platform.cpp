@@ -30,7 +30,9 @@ bool drill_limit_overwrite = false;
 // Returns whether any switches were high
 bool handle_limit_switches()
 {
-    if(platform_limit_overwrite) {return false;}
+    if (platform_limit_overwrite) {
+        return false;
+    }
 
     static bool detect_pressed = false;
     // TODO: Option to disable. We don't want them stuck at comp!
@@ -68,7 +70,7 @@ bool handle_limit_switches()
     return right_platform_limit || left_platform_limit;
 }
 
-bool handle_platform_overwrite(bool mode) 
+bool handle_platform_overwrite(bool mode)
 {
     platform_limit_overwrite = mode;
     return platform_limit_overwrite;
@@ -105,17 +107,15 @@ void platform_stop()
     lowering_platform_right.stop();
 }
 
-String set_platform_overwrite(const String & mode) 
+String set_platform_overwrite(const String& mode)
 {
-    if(mode.equals("on"))
-    {
+    if (mode.equals("on")) {
+        DEBUG_LOG("Enabling lowering platform limit switches.");
         handle_platform_overwrite(true);
-    }
-    else if(mode.equals("off")){
+    } else if (mode.equals("off")) {
+        DEBUG_LOG("Disabling lowering platform limit switches.");
         handle_platform_overwrite(false);
-    }
-    else 
-    {
+    } else {
         return CMD_ERR_MSG;
     }
     return {};

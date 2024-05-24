@@ -2,6 +2,7 @@
 
 #include "cmds/co2.hpp"
 #include "cmds/command_types.hpp"
+#include "cmds/drill.hpp"
 #include "cmds/drill_sensors.hpp"
 #include "cmds/ping.hpp"
 #include "cmds/platform.hpp"
@@ -16,7 +17,7 @@
 
 namespace cmd {
 
-constexpr int NUM_DEVICES = 23;
+constexpr int NUM_DEVICES = 24;
 constexpr int MAX_NUM_FUNCTIONS = 5;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
@@ -122,27 +123,25 @@ constexpr cmd_map COMMAND_MAP = {
         // Platform management
         {
             "platform_lower",
-            {
-                {{"up",
-                  [](const String&) {
-                      platform_up();
-                      return String{};
-                  }},
-                 {"down",
-                  [](const String&) {
-                      platform_down();
-                      return String{};
-                  }},
-                 {"stop",
-                  [](const String&) {
-                      platform_stop();
-                      return String{};
-                  }},
-                 {
-                     "limit_input",
-                     set_platform_overwrite,
-                 }},
-            },
+            {{{"up",
+               [](const String&) {
+                   platform_up();
+                   return String{};
+               }},
+              {"down",
+               [](const String&) {
+                   platform_down();
+                   return String{};
+               }},
+              {"stop",
+               [](const String&) {
+                   platform_stop();
+                   return String{};
+               }},
+              {
+                  "limit_input",
+                  set_platform_overwrite,
+              }}},
         },
         //
         PUMP_MAP_ITEM(1),
@@ -151,6 +150,14 @@ constexpr cmd_map COMMAND_MAP = {
         PUMP_MAP_ITEM(4),
         PUMP_MAP_ITEM(5),
         PUMP_MAP_ITEM(6),
+        // Drill
+        {
+            "drill",
+            {{
+                {"spin", drill_spin},
+                {"stop", drill_stop},
+            }},
+        },
         // Drill sensors
         {
             "drill_sensors",
