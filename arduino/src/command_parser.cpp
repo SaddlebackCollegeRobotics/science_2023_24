@@ -89,6 +89,8 @@ void ParsedCommand::respond(const String& msg) const
 
     response += String(checksum, HEX);
 
+    response += '\n';
+
     Serial.println(response);
 }
 
