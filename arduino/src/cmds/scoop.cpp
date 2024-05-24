@@ -30,7 +30,7 @@ const int scoop3Down = 650;
 const int scoop3Up = 1720;
 
 // SCOOP 4 pulse widths
-const int scoop4Level = 1400;
+const int scoop4Level = 1460;
 const int scoop4Down = 2350;
 const int scoop4Up = 1320;
 
