@@ -29,10 +29,10 @@ const int scoop3Level = 1550;
 const int scoop3Down = 650;
 const int scoop3Up = 1720;
 
-// SCOOP 4 pulse widths TBD
-const int scoop4Level = 1430;
-const int scoop4Down = 2470;
-const int scoop4Up = 1300;
+// SCOOP 4 pulse widths
+const int scoop4Level = 1400;
+const int scoop4Down = 2350;
+const int scoop4Up = 1320;
 
 void scoop_down(Servo& scoop, SCOOP_NUM scoopNum)
 {

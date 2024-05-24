@@ -13,6 +13,7 @@ namespace {
 
 // TODO
 // constexpr uint32_t STEPS_PER_REV = 200;
+// solve lowering from max height with limit switch on
 
 StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step, 7);
 StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, 7);

@@ -18,6 +18,8 @@ void setup()
     cmd::init_hooks();
 }
 
+// Lowering platform TOF height for scooping
+// Sand: 25mm scooping height
 void loop()
 {
     if (Serial.available() >= cmd::min_size) {
