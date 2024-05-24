@@ -19,7 +19,6 @@ StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_
 bool drill_platform_limit = false;
 bool drill_limit_overwrite = false;
 
-
 // Handler for platform limit switches
 // Currently just checks whether any platform switch is high, and if it is, stops the motors
 // Returns whether any switches were high
@@ -28,7 +27,7 @@ bool handle_drill_limit_switches()
     static bool detect_pressed = false;
 
     if (drill_limit_overwrite) {
-        detect_pressed = false;         // reset detection state
+        detect_pressed = false; // reset detection state
         return false;
     }
 
@@ -47,28 +46,13 @@ bool handle_drill_limit_switches()
         detect_pressed = false;
     }
 
-    //!!! Old implementation
-    // if (left_platform_limit || right_platform_limit) {
-    //     // Stop platform motors
-    //     lowering_platform_left.stop();
-    //     lowering_platform_right.stop();
-    //     return false;
-    // }
-
-    // bool drill_switch_val = static_cast<bool>(digitalRead(pins::DRILL_PLATFORM_LIMIT_SWITCH));
-
-    // if (drill_switch_val) {
-    //     drill_platform.stop();
-    //     return false;
-    // }
-
     return drill_platform_limit;
 }
 
 bool handle_drill_platform_overwrite(bool mode)
 {
-    if(mode) {
-        drill_platform_limit = false;       // reset the platform limit to false to allow motor movements
+    if (mode) {
+        drill_platform_limit = false; // reset the platform limit to false to allow motor movements
     }
     drill_limit_overwrite = mode;
     return drill_limit_overwrite;
@@ -118,19 +102,11 @@ void init_drill_platform()
 {
     // Limit switches
     pinMode(pins::DRILL_PLATFORM_LIMIT_SWITCH, INPUT);
-
-    // lowering_platform_left.setSpeed(5);
-    // lowering_platform_right.setSpeed(5);
-    // drill_platform.setSpeed(5);
 }
 
 void update_drill_platform()
 {
     handle_drill_limit_switches();
-
-    // lowering_platform_left.update();
-    // lowering_platform_right.update();
-    // drill_platform.update();
 }
 
 } // namespace cmd

@@ -59,4 +59,6 @@ constexpr struct
     pin_t counter_clockwise;
 } DRILL{28, 30};
 
+constexpr pin_t DRILL_PROBE = 6;
+
 } // namespace pins

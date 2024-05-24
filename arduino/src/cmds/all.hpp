@@ -3,11 +3,12 @@
 #include "cmds/co2.hpp"
 #include "cmds/command_types.hpp"
 #include "cmds/drill.hpp"
-#include "cmds/drill_sensors.hpp"
 #include "cmds/drill_platform.hpp"
-#include "cmds/ping.hpp"
+#include "cmds/drill_probe.hpp"
+#include "cmds/drill_sensors.hpp"
 #include "cmds/platform.hpp"
 #include "cmds/pump.hpp"
+#include "cmds/root.hpp"
 #include "cmds/scoop.hpp"
 #include "cmds/tof.hpp"
 #include "util/map.hpp"
@@ -18,12 +19,10 @@
 
 namespace cmd {
 
-constexpr int NUM_DEVICES = 25;
+constexpr int NUM_DEVICES = 26;
 constexpr int MAX_NUM_FUNCTIONS = 5;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
-
-// TODO: Do we want to be able to select multiple devices?
 
 #define CO2_MAP_ITEM(n)                                                                                                \
     {                                                                                                                  \
@@ -52,7 +51,6 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
                 },                                                                                                     \
             },                                                                                                         \
     }
-// Read / write // TODO: Complete
 #define SCOOP_MAP_ITEM(n)                                                                                              \
     {                                                                                                                  \
         "scoop_" #n,                                                                                                   \
@@ -77,7 +75,6 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
                 },                                                                                                     \
             },                                                                                                         \
     }
-// TODO: Figure out pump functions
 #define PUMP_MAP_ITEM(n)                                                                                               \
     {                                                                                                                  \
         "pump_" #n,                                                                                                    \
@@ -190,6 +187,13 @@ constexpr cmd_map COMMAND_MAP = {
                 {"read_moisture", get_drill_moisture},
             }},
         },
+        // Drill probe
+        {"drill_probe",
+         {{
+             {"up", drill_probe_up},
+             {"down", drill_probe_down},
+             {"adjust", drill_probe_adjust},
+         }}},
     },
 };
 
@@ -208,6 +212,7 @@ inline void init_hooks()
     scoop_init();
     init_platform();
     init_drill_platform();
+    drill_probe_init();
     // pump_init();
     // stepper_init();
 }

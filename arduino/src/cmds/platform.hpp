@@ -8,9 +8,9 @@ namespace cmd {
 void platform_up();
 void platform_down();
 void platform_stop();
-String set_platform_overwrite(const String & mode);
+String set_platform_overwrite(const String& mode);
 
-// String step(const String&);
+// TODO: Check TOF sensor distance for platform estimations.
 
 void init_platform();
 void update_platform();

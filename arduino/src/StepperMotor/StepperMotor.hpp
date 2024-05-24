@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <Servo.h>
 
+// TODO: Rewrite to handle limit switches
+
 // Simple class for the usongshine stepping motor (model #????)
 class StepperMotor
 {
@@ -19,8 +21,6 @@ public:
     void setDirection(Direction dir);
     void start();
     void stop();
-
-    void update();
 
 private:
     pins::pin_t dir_pin_;

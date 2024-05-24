@@ -9,6 +9,8 @@ namespace cmd {
 
 namespace {
 
+// TODO: Refactor everything...
+
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 util::array<Servo, 4> scoops = {};
 
@@ -32,18 +34,17 @@ const int scoop4Up = 0;
 
 void scoop_down(Servo& scoop, SCOOP_NUM scoopNum)
 {
-    switch(scoopNum)
-    {
-        case SCOOP_NUM::SCOOP_1:
+    switch (scoopNum) {
+    case SCOOP_NUM::SCOOP_1:
         scoop.writeMicroseconds(scoop1Down);
         break;
-        case SCOOP_NUM::SCOOP_2:
+    case SCOOP_NUM::SCOOP_2:
         scoop.writeMicroseconds(scoop2Down);
         break;
-        case SCOOP_NUM::SCOOP_3:
+    case SCOOP_NUM::SCOOP_3:
         scoop.writeMicroseconds(scoop3Down);
         break;
-        case SCOOP_NUM::SCOOP_4:
+    case SCOOP_NUM::SCOOP_4:
         scoop.writeMicroseconds(scoop4Down);
         break;
     }
@@ -51,18 +52,17 @@ void scoop_down(Servo& scoop, SCOOP_NUM scoopNum)
 
 void scoop_up(Servo& scoop, SCOOP_NUM scoopNum)
 {
-    switch(scoopNum)
-    {
-        case SCOOP_NUM::SCOOP_1:
+    switch (scoopNum) {
+    case SCOOP_NUM::SCOOP_1:
         scoop.writeMicroseconds(scoop1Up);
         break;
-        case SCOOP_NUM::SCOOP_2:
+    case SCOOP_NUM::SCOOP_2:
         scoop.writeMicroseconds(scoop2Up);
         break;
-        case SCOOP_NUM::SCOOP_3:
+    case SCOOP_NUM::SCOOP_3:
         scoop.writeMicroseconds(scoop3Up);
         break;
-        case SCOOP_NUM::SCOOP_4:
+    case SCOOP_NUM::SCOOP_4:
         scoop.writeMicroseconds(scoop4Up);
         break;
     }
@@ -70,18 +70,17 @@ void scoop_up(Servo& scoop, SCOOP_NUM scoopNum)
 
 void scoop_level(Servo& scoop, SCOOP_NUM scoopNum)
 {
-    switch(scoopNum)
-    {
-        case SCOOP_NUM::SCOOP_1:
+    switch (scoopNum) {
+    case SCOOP_NUM::SCOOP_1:
         scoop.writeMicroseconds(scoop1Level);
         break;
-        case SCOOP_NUM::SCOOP_2:
+    case SCOOP_NUM::SCOOP_2:
         scoop.writeMicroseconds(scoop2Level);
         break;
-        case SCOOP_NUM::SCOOP_3:
+    case SCOOP_NUM::SCOOP_3:
         scoop.writeMicroseconds(scoop3Level);
         break;
-        case SCOOP_NUM::SCOOP_4:
+    case SCOOP_NUM::SCOOP_4:
         scoop.writeMicroseconds(scoop4Level);
         break;
     }
@@ -89,54 +88,45 @@ void scoop_level(Servo& scoop, SCOOP_NUM scoopNum)
 
 void scoop_adjust(Servo& scoop, const int degrees, SCOOP_NUM scoopNum)
 {
-    switch (scoopNum)
-    {
-        case SCOOP_NUM::SCOOP_1:
-            if ((scoop.readMicroseconds() + (degrees*7.41)) >= scoop1Up){
-                scoop.writeMicroseconds(scoop1Up);
-            }
-            else if ((scoop.readMicroseconds() + (degrees*7.41)) <= scoop1Down){
-                scoop.writeMicroseconds(scoop1Down);
-            }
-            else{
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees*7.41));
-            }
-            break;
-        case SCOOP_NUM::SCOOP_2:
-            if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) <= scoop2Up){
-                scoop.writeMicroseconds(scoop2Up);
-            }
-            else if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) >= scoop2Down){
-                scoop.writeMicroseconds(scoop2Down);
-            }
-            else{
-                DEBUG_LOG("pulsewidth = %d", degrees);
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (-1*(degrees*7.41)));
-            }
-            break;
-        // TODO: test real values of scoops 3/4 up and scoops 3/4 down
-        case SCOOP_NUM::SCOOP_3:
-            if ((scoop.readMicroseconds() + (degrees*7.41)) >= scoop3Up){
-                scoop.writeMicroseconds(scoop3Up);
-            }
-            else if ((scoop.readMicroseconds() + (degrees*7.41)) <= scoop3Down){
-                scoop.writeMicroseconds(scoop3Down);
-            }
-            else{
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees*7.41));
-            }
-            break;
-        case SCOOP_NUM::SCOOP_4:
-            if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) <= scoop4Up){
-                scoop.writeMicroseconds(scoop4Up);
-            }
-            else if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) >= scoop4Down){
-                scoop.writeMicroseconds(scoop4Down);
-            }
-            else{
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (-1*(degrees*7.41)));
-            }
-            break;
+    switch (scoopNum) {
+    case SCOOP_NUM::SCOOP_1:
+        if ((scoop.readMicroseconds() + (degrees * 7.41)) >= scoop1Up) {
+            scoop.writeMicroseconds(scoop1Up);
+        } else if ((scoop.readMicroseconds() + (degrees * 7.41)) <= scoop1Down) {
+            scoop.writeMicroseconds(scoop1Down);
+        } else {
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees * 7.41));
+        }
+        break;
+    case SCOOP_NUM::SCOOP_2:
+        if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) <= scoop2Up) {
+            scoop.writeMicroseconds(scoop2Up);
+        } else if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) >= scoop2Down) {
+            scoop.writeMicroseconds(scoop2Down);
+        } else {
+            DEBUG_LOG("pulsewidth = %d", degrees);
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (-1 * (degrees * 7.41)));
+        }
+        break;
+    // TODO: test real values of scoops 3/4 up and scoops 3/4 down
+    case SCOOP_NUM::SCOOP_3:
+        if ((scoop.readMicroseconds() + (degrees * 7.41)) >= scoop3Up) {
+            scoop.writeMicroseconds(scoop3Up);
+        } else if ((scoop.readMicroseconds() + (degrees * 7.41)) <= scoop3Down) {
+            scoop.writeMicroseconds(scoop3Down);
+        } else {
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees * 7.41));
+        }
+        break;
+    case SCOOP_NUM::SCOOP_4:
+        if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) <= scoop4Up) {
+            scoop.writeMicroseconds(scoop4Up);
+        } else if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) >= scoop4Down) {
+            scoop.writeMicroseconds(scoop4Down);
+        } else {
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (-1 * (degrees * 7.41)));
+        }
+        break;
     }
 }
 
