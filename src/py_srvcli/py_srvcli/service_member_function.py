@@ -1,6 +1,6 @@
 from zlib import crc32
 from crc import Crc32
-from science_interfaces.srv import ScienceRPC
+from rcl_interfaces.srv import DescribeParameters
 from std_msgs.msg import Float32MultiArray
 
 import rclpy
@@ -14,18 +14,16 @@ class ScienceServer(Node):
     def __init__(self):
 
         super().__init__("science_server")
-
+    
         self.srv = self.create_service(
-            ScienceRPC, "science_rpc", self.science_rpc_callback
+            DescribeParameters, "science_rpc", self.science_rpc_callback
         )
 
         self._arduino_serial = Serial("/dev/ttyACM0", 9600, timeout=1)
 
     def science_rpc_callback(self, request, response):
 
-        command_str = (
-            ",".join([request.device, request.function, request.parameter]) + ","
-        )
+        command_str = ",".join(request.names) + ","
         command_bytes = bytes(command_str, encoding="utf-8")
         checksum = hex(crc32(command_bytes))
         self.get_logger().info(
@@ -43,7 +41,7 @@ class ScienceServer(Node):
 
         # Arduino did not respond, so command was invalid
         if len(ret_data) < 4:
-            response.ret = "INVALID"
+            response.descriptors[0].name = "INVALID"
             return response
 
         # First field has leading "b'"
@@ -60,10 +58,10 @@ class ScienceServer(Node):
         )
 
         if recv_calc_checksum != recv_checksum:
-            response.ret = "BAD CHECKSUM"
+            response.descriptors[0].name = "BAD CHECKSUM"
             return response
 
-        response.ret = ret_data[2]
+        response.descriptors[0].name = ret_data[2]
         return response
 
 
