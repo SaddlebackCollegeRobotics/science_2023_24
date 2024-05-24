@@ -48,7 +48,6 @@ constexpr int DRILL_PLATFORM_LIMIT_SWITCH = 44;
 constexpr stepper_pin_t DRILL_PLATFORM_PINS = {.dir = 13, .step = 12};
 
 const util::array PUMP_PINS = {22, 24, 26, 28, 30, 32, 34, 36};
-// TODO: Steppers, platform,
 
 constexpr pin_t TEMP_SENSOR_PIN = A0;
 constexpr pin_t MOISTURE_SENSOR_PIN = A1;
