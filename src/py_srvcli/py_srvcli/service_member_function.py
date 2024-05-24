@@ -1,7 +1,6 @@
 from zlib import crc32
 from crc import Crc32
 from rcl_interfaces.srv import DescribeParameters
-from std_msgs.msg import Float32MultiArray
 
 import rclpy
 from rclpy.node import Node
@@ -14,7 +13,7 @@ class ScienceServer(Node):
     def __init__(self):
 
         super().__init__("science_server")
-    
+
         self.srv = self.create_service(
             DescribeParameters, "science_rpc", self.science_rpc_callback
         )
