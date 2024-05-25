@@ -35,19 +35,25 @@ class ArduinoManager(Node):
 
         self.msg = Float32MultiArray()
 
-    def send_request(self, device, function, parameter):
-        self.req.names = [device, function, parameter]
-        self.future = self.cli.call_async(self.req)
-        rclpy.spin_until_future_complete(self, self.future)
-        return self.future.result()
-
     def read_serial(self):
 
         for sens_dev, pub in self.co2_sensor_publishers.items():
             try:
-                self.msg.data[0] = float(self.send_request(sens_dev, "read_co2", ""))
-                self.msg.data[1] = float(self.send_request(sens_dev, "read_temp", ""))
-                self.msg.data[2] = float(self.send_request(sens_dev, "read_humid", ""))
+                self.msg.data[0] = float(
+                    self.cli.call(
+                        DescribeParameters.Request(names=[sens_dev, "read_co2", ""])
+                    )
+                )
+                self.msg.data[1] = float(
+                    self.cli.call(
+                        DescribeParameters.Request(name=[sens_dev, "read_temp", ""])
+                    )
+                )
+                self.msg.data[2] = float(
+                    self.cli.call(
+                        DescribeParameters.Request(name=[sens_dev, "read_humid", ""])
+                    )
+                )
                 pub.publish(self.msg)
             except TypeError as e:
                 self.get_logger().warn(f"Invalid cmd response: ({e})")
