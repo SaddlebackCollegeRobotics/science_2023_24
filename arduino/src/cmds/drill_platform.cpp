@@ -61,22 +61,22 @@ bool handle_drill_platform_overwrite(bool mode)
 } // namespace
 
 // Moves the platform down 5 revolutions
+void drill_platform_down()
+{
+    drill_platform.setDirection(StepperMotor::Direction::POSITIVE);
+
+    drill_platform.start();
+}
+
+// Moves the platform up for 5 revolutions
 void drill_platform_up()
 {
     // Only allow upward movement when limit switches are not pressed
     if (!drill_platform_limit) {
-        drill_platform.setDirection(StepperMotor::Direction::POSITIVE);
+        drill_platform.setDirection(StepperMotor::Direction::NEGATIVE);
 
         drill_platform.start();
     }
-}
-
-// Moves the platform up for 5 revolutions
-void drill_platform_down()
-{
-    drill_platform.setDirection(StepperMotor::Direction::NEGATIVE);
-
-    drill_platform.start();
 }
 
 void drill_platform_stop()
