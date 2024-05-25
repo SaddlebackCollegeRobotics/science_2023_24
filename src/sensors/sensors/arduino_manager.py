@@ -42,20 +42,20 @@ class ArduinoManager(Node):
                 self.msg.data[0] = float(
                     self.cli.call(
                         DescribeParameters.Request(names=[sens_dev, "read_co2", ""])
-                    )
+                    )[0].name
                 )
                 self.msg.data[1] = float(
                     self.cli.call(
                         DescribeParameters.Request(name=[sens_dev, "read_temp", ""])
-                    )
+                    )[0].name
                 )
                 self.msg.data[2] = float(
                     self.cli.call(
                         DescribeParameters.Request(name=[sens_dev, "read_humid", ""])
-                    )
+                    )[0].name
                 )
                 pub.publish(self.msg)
-            except TypeError as e:
+            except:
                 self.get_logger().warn(f"Invalid cmd response: ({e})")
 
 
