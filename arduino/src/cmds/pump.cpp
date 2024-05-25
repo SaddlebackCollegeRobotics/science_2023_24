@@ -17,14 +17,16 @@ bool pumpsActive[8];
 void pump_run(uint8_t p_id, uint32_t t)
 {
     pump::startMillis[p_id] = millis();
-    digitalWrite(pins::PUMP_PINS[p_id], HIGH);
+    DEBUG_LOG("Running pump (pin = %d)", pins::PUMP_PINS[p_id]);
+    digitalWrite(pins::PUMP_PINS[p_id], LOW);
     pump::pumpPeriod[p_id] = t;
     pump::pumpsActive[p_id] = true;
 }
 
 void pump_stop(uint8_t p_id)
 {
-    digitalWrite(pins::PUMP_PINS[p_id], LOW);
+    DEBUG_LOG("Stopping pump (pin = %d)", pins::PUMP_PINS[p_id]);
+    digitalWrite(pins::PUMP_PINS[p_id], HIGH);
 }
 
 } // namespace
@@ -50,6 +52,7 @@ void pump_init()
     // set up pumps
     for (int pin : pins::PUMP_PINS) {
         pinMode(pin, OUTPUT);
+        digitalWrite(pin, HIGH);
     }
 
     // pump state to false
