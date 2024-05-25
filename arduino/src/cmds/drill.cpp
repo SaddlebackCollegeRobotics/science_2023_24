@@ -50,6 +50,8 @@ String drill_stop(const String&)
 {
     digitalWrite(pins::DRILL.clockwise, LOW);
     digitalWrite(pins::DRILL.counter_clockwise, LOW);
+
+    return {};
 }
 
 void drill_init()
