@@ -1,10 +1,10 @@
+from threading import Thread
+from time import sleep
 from std_msgs.msg import Float32MultiArray
 from rcl_interfaces.srv import DescribeParameters
 
 import rclpy
-import serial
 from rclpy.node import Node, Publisher
-import json
 
 
 class ArduinoManager(Node):
@@ -14,6 +14,7 @@ class ArduinoManager(Node):
     def __init__(self):
         super().__init__("arduino_manager")
 
+        # CO2, temperature, humidity
         self.co2_sensor_publishers = {
             "co2_1": self.create_publisher(Float32MultiArray, "/co2_sensor_1", 10),
             "co2_2": self.create_publisher(Float32MultiArray, "/co2_sensor_2", 10),
@@ -25,44 +26,47 @@ class ArduinoManager(Node):
             "co2_8": self.create_publisher(Float32MultiArray, "/co2_sensor_8", 10),
         }
 
-        self.timer = self.create_timer(2, self.read_serial)
-        self.timestamp = 0
-
         self.cli = self.create_client(DescribeParameters, "science_rpc")
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info("ScienceRPC service not available, waiting again...")
-        self.req = DescribeParameters.Request()
 
         self.msg = Float32MultiArray()
 
-    def read_serial(self):
-
-        for sens_dev, pub in self.co2_sensor_publishers.items():
-            try:
-                self.msg.data[0] = float(
-                    self.cli.call(
-                        DescribeParameters.Request(names=[sens_dev, "read_co2", ""])
+    def send_data_requests(self):
+        while True:
+            for sens_dev, pub in self.co2_sensor_publishers.items():
+                self.msg.data = [0.0] * 3
+                try:
+                    self.msg.data[0] = float(
+                        self.cli.call(
+                            DescribeParameters.Request(names=[sens_dev, "read_co2", ""])
+                        )
+                        .descriptors[0]
+                        .name
                     )
-                    .descriptors[0]
-                    .name
-                )
-                self.msg.data[1] = float(
-                    self.cli.call(
-                        DescribeParameters.Request(name=[sens_dev, "read_temp", ""])
+                    self.msg.data[1] = float(
+                        self.cli.call(
+                            DescribeParameters.Request(
+                                names=[sens_dev, "read_temp", ""]
+                            )
+                        )
+                        .descriptors[0]
+                        .name
                     )
-                    .descriptors[0]
-                    .name
-                )
-                self.msg.data[2] = float(
-                    self.cli.call(
-                        DescribeParameters.Request(name=[sens_dev, "read_humid", ""])
+                    self.msg.data[2] = float(
+                        self.cli.call(
+                            DescribeParameters.Request(
+                                names=[sens_dev, "read_humid", ""]
+                            )
+                        )
+                        .descriptors[0]
+                        .name
                     )
-                    .descriptors[0]
-                    .name
-                )
-                pub.publish(self.msg)
-            except:
-                self.get_logger().warn(f"Invalid cmd response")
+                    pub.publish(self.msg)
+                except TypeError as e:
+                    self.get_logger().warn(f"Invalid cmd response ({e})")
+                    break
+            sleep(2)
 
 
 def main(args=None):
@@ -70,7 +74,15 @@ def main(args=None):
 
     arduino_manager = ArduinoManager()
 
-    rclpy.spin(arduino_manager)
+    spin_thread = Thread(target=rclpy.spin, args=(arduino_manager,))
+    spin_thread.start()
+
+    try:
+        arduino_manager.send_data_requests()
+    except KeyboardInterrupt:
+        print("Exiting...")
+
+    arduino_manager.destroy_node()
 
     rclpy.shutdown()
 

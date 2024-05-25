@@ -21,7 +21,6 @@ class ScienceServer(Node):
         self._arduino_serial = Serial("/dev/ttyACM0", 9600, timeout=1)
 
     def science_rpc_callback(self, request, response):
-
         command_str = ",".join(request.names) + ","
         command_bytes = bytes(command_str, encoding="utf-8")
         checksum = hex(crc32(command_bytes))
