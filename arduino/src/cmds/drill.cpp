@@ -59,6 +59,8 @@ void drill_init()
 {
     pinMode(pins::DRILL.clockwise, OUTPUT);
     pinMode(pins::DRILL.counter_clockwise, OUTPUT);
+    digitalWrite(pins::DRILL.clockwise, LOW);
+    digitalWrite(pins::DRILL.counter_clockwise, LOW);
 }
 
 } // namespace cmd
