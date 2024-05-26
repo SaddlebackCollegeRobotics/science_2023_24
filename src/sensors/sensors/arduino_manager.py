@@ -48,7 +48,7 @@ class ArduinoManager(Node):
                             names=[sens_dev, "read", ""])
                     ).descriptors[0].name
 
-                    if (res):
+                    if not res:
                         continue
 
                     co2, temp, humid = res.split('|')
