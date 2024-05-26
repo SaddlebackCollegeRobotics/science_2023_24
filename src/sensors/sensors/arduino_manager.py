@@ -44,7 +44,8 @@ class ArduinoManager(Node):
                 try:
                     self.co2_msg.data[0] = float(
                         self.cli.call(
-                            DescribeParameters.Request(names=[sens_dev, "read_co2", ""])
+                            DescribeParameters.Request(
+                                names=[sens_dev, "read_co2", ""])
                         )
                         .descriptors[0]
                         .name
@@ -75,7 +76,7 @@ class ArduinoManager(Node):
                     self.get_logger().warn(
                         f"Unhandled exception type when getting co2 data! ({e})"
                     )
-            sleep(0.25)
+            sleep(2)
 
     def send_tof_data_requests(self):
         while True:
@@ -84,7 +85,8 @@ class ArduinoManager(Node):
                 try:
                     self.tof_msg.data = int(
                         self.cli.call(
-                            DescribeParameters.Request(names=[sens_dev, "read", ""])
+                            DescribeParameters.Request(
+                                names=[sens_dev, "read", ""])
                         )
                         .descriptors[0]
                         .name
@@ -97,7 +99,7 @@ class ArduinoManager(Node):
                     self.get_logger().warn(
                         f"Unhandled exception type when getting tof data! ({e})"
                     )
-            sleep(2)
+            sleep(0.25)
 
 
 def main(args=None):
