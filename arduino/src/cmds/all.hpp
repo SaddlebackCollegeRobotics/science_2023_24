@@ -219,6 +219,7 @@ inline void init_hooks()
     init_platform();
     init_drill_platform();
     drill_probe_init();
+    drill_init();
     // pump_init();
     // stepper_init();
 }

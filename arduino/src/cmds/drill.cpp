@@ -17,7 +17,7 @@ void drill_spin_cw()
     task_timer.in(DELAY_MILLIS, [](void*) -> bool {
         DEBUG_LOG("Drill spinning CW.");
         digitalWrite(pins::DRILL.clockwise, HIGH);
-        return false;
+        return true;
     });
 }
 
@@ -27,7 +27,7 @@ void drill_spin_ccw()
     task_timer.in(DELAY_MILLIS, [](void*) -> bool {
         DEBUG_LOG("Drill spinning CCW.");
         digitalWrite(pins::DRILL.counter_clockwise, HIGH);
-        return false;
+        return true;
     });
 }
 
