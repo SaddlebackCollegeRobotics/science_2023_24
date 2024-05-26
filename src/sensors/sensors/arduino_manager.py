@@ -42,32 +42,21 @@ class ArduinoManager(Node):
             for sens_dev, pub in self.co2_sensor_publishers.items():
                 self.co2_msg.data = [0.0] * 3
                 try:
-                    self.co2_msg.data[0] = float(
-                        self.cli.call(
-                            DescribeParameters.Request(
-                                names=[sens_dev, "read_co2", ""])
-                        )
-                        .descriptors[0]
-                        .name
-                    )
-                    self.co2_msg.data[1] = float(
-                        self.cli.call(
-                            DescribeParameters.Request(
-                                names=[sens_dev, "read_temp", ""]
-                            )
-                        )
-                        .descriptors[0]
-                        .name
-                    )
-                    self.co2_msg.data[2] = float(
-                        self.cli.call(
-                            DescribeParameters.Request(
-                                names=[sens_dev, "read_humid", ""]
-                            )
-                        )
-                        .descriptors[0]
-                        .name
-                    )
+
+                    res = self.cli.call(
+                        DescribeParameters.Request(
+                            names=[sens_dev, "read", ""])
+                    ).descriptors[0].name
+
+                    if (res):
+                        continue
+
+                    co2, temp, humid = res.split('|')
+
+                    self.co2_msg.data[0] = float(co2)
+                    self.co2_msg.data[1] = float(temp)
+                    self.co2_msg.data[2] = float(humid)
+
                     pub.publish(self.co2_msg)
                 except TypeError as e:
                     self.get_logger().warn(f"Invalid cmd response ({e})")
@@ -76,7 +65,7 @@ class ArduinoManager(Node):
                     self.get_logger().warn(
                         f"Unhandled exception type when getting co2 data! ({e})"
                     )
-            sleep(2)
+            sleep(2.1)
 
     def send_tof_data_requests(self):
         while True:
