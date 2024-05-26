@@ -13,8 +13,6 @@ enum class PUMP_NUM
     PUMP_4,
     PUMP_5,
     PUMP_6,
-    PUMP_7,
-    PUMP_8,
 };
 
 enum class PumpMode

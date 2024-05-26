@@ -20,7 +20,7 @@
 namespace cmd {
 
 constexpr int NUM_DEVICES = 26;
-constexpr int MAX_NUM_FUNCTIONS = 6;
+constexpr int MAX_NUM_FUNCTIONS = 7;
 using fn_map = util::map<util::string_view, command_fn_t, MAX_NUM_FUNCTIONS>;
 using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
 
@@ -29,16 +29,8 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
         "co2_" #n,                                                                                                     \
             {                                                                                                          \
                 {                                                                                                      \
-                    {"read_co2",                                                                                       \
-                     [](const String& str) -> String { return co2_read(CO2_NUM::CO2_##n, Scd30DataType::CO2, str); }}, \
-                    {"read_temp",                                                                                      \
-                     [](const String& str) -> String {                                                                 \
-                         return co2_read(CO2_NUM::CO2_##n, Scd30DataType::TEMPERATURE, str);                           \
-                     }},                                                                                               \
-                    {"read_humid",                                                                                     \
-                     [](const String& str) -> String {                                                                 \
-                         return co2_read(CO2_NUM::CO2_##n, Scd30DataType::HUMIDITY, str);                              \
-                     }},                                                                                               \
+                    {"read",                                                                                       \
+                     [](const String& str) -> String { return co2_read(CO2_NUM::CO2_##n, str); }},                                                                                             \
                 },                                                                                                     \
             },                                                                                                         \
     }
@@ -138,12 +130,21 @@ constexpr cmd_map COMMAND_MAP = {
                }},
               {
                   "limit_input",
-                  set_platform_overwrite,
+                  set_platform_limit_overwrite,
+              },
+              {
+                  "hard_stop_input",
+                  set_platform_hard_stop_overwrite,
               },
               {
                   "read",
-                  read_platform_steps,
-              }}},
+                  read_platform_revs,
+              },
+              {
+                  "set_enabled",
+                  platform_set_enabled,
+              },
+              }},
               
         },
         //

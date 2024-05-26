@@ -12,9 +12,11 @@ namespace cmd {
 namespace {
 
 // TODO
-// constexpr uint32_t STEPS_PER_REV = 200;
+constexpr uint32_t STEPS_PER_REV = 200;
+// How far the drill platform is allowed to move down before hard-stop kicks in
+constexpr float NUM_REV_HARD_STOP = -8; // TODO
 
-StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step, 7);
+StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step, pins::DRILL_PLATFORM_PINS.enable, STEPS_PER_REV);
 
 bool drill_platform_limit = false;
 bool drill_limit_overwrite = false;
@@ -63,6 +65,8 @@ bool handle_drill_platform_overwrite(bool mode)
 // Moves the platform down 5 revolutions
 void drill_platform_down()
 {
+    drill_platform.setEnabled(true);
+
     drill_platform.setDirection(StepperMotor::Direction::POSITIVE);
 
     drill_platform.start();
@@ -73,6 +77,7 @@ void drill_platform_up()
 {
     // Only allow upward movement when limit switches are not pressed
     if (!drill_platform_limit) {
+        drill_platform.setEnabled(true);
         drill_platform.setDirection(StepperMotor::Direction::NEGATIVE);
 
         drill_platform.start();
@@ -82,6 +87,7 @@ void drill_platform_up()
 void drill_platform_stop()
 {
     drill_platform.stop();
+    drill_platform.setEnabled(false);
 }
 
 String set_drill_platform_overwrite(const String& mode)

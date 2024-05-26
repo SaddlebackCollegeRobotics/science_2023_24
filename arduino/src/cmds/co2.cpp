@@ -34,33 +34,26 @@ void mux_reset()
 Adafruit_SCD30 scd30;
 
 // Negative values represent an error
-float scd30_get_data(Scd30DataType type)
+String scd30_get_data()
 {
     if (scd30.dataReady()) {
         DEBUG_LOG("SCD30 dat available!");
 
         if (!scd30.read()) {
             DEBUG_LOG("Failed to read SCD30 data!");
-            return NAN;
+            return "";
         }
 
-        switch (type) {
-        case Scd30DataType::CO2:
-            return scd30.CO2;
-        case Scd30DataType::TEMPERATURE:
-            return scd30.temperature;
-        case Scd30DataType::HUMIDITY:
-            return scd30.relative_humidity;
-        }
+        return String(scd30.CO2) + '|' + String(scd30.temperature) + '|' + String(scd30.relative_humidity);
     }
 
-    DEBUG_LOG("No SCD30 sensor data available (type = %d)!", static_cast<int>(type));
-    return NAN;
+    DEBUG_LOG("No SCD30 sensor data available (type = %d)!");
+    return "";
 }
 
 } // namespace
 
-String co2_read(CO2_NUM which, Scd30DataType type, [[maybe_unused]] const String& param)
+String co2_read(CO2_NUM which, [[maybe_unused]] const String& param)
 {
     auto channel = static_cast<int>(which);
     if (channel > 7) {
@@ -71,15 +64,11 @@ String co2_read(CO2_NUM which, Scd30DataType type, [[maybe_unused]] const String
     // Only one object, as all sensors are multiplexed on a single I2C line
     mux_set_channel(channel);
 
-    float data = scd30_get_data(type);
+    auto ret = scd30_get_data();
 
     mux_reset();
 
-    if (data == NAN) {
-        return CMD_ERR_MSG;
-    }
-
-    return String(data);
+    return ret;
 }
 
 void co2_init()

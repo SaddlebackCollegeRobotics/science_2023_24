@@ -17,14 +17,7 @@ enum class CO2_NUM
     CO2_8,
 };
 
-enum class Scd30DataType
-{
-    CO2,
-    TEMPERATURE,
-    HUMIDITY
-};
-
-String co2_read(CO2_NUM which, Scd30DataType type, const String& param);
+String co2_read(CO2_NUM which, const String& param);
 
 void co2_init();
 

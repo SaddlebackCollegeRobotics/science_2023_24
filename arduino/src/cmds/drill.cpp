@@ -9,25 +9,25 @@ namespace cmd {
 
 namespace {
 
-constexpr auto DELAY_MILLIS = 2000ul;
+constexpr auto DELAY_MILLIS = 3000ul;
 
 void drill_spin_cw()
 {
+    digitalWrite(pins::DRILL.counter_clockwise, LOW);
     task_timer.in(DELAY_MILLIS, [](void*) -> bool {
         DEBUG_LOG("Drill spinning CW.");
         digitalWrite(pins::DRILL.clockwise, HIGH);
-        digitalWrite(pins::DRILL.counter_clockwise, LOW);
-        return true;
+        return false;
     });
 }
 
 void drill_spin_ccw()
 {
+    digitalWrite(pins::DRILL.clockwise, LOW);
     task_timer.in(DELAY_MILLIS, [](void*) -> bool {
         DEBUG_LOG("Drill spinning CCW.");
-        digitalWrite(pins::DRILL.clockwise, LOW);
         digitalWrite(pins::DRILL.counter_clockwise, HIGH);
-        return true;
+        return false;
     });
 }
 
@@ -48,6 +48,7 @@ String drill_spin(const String& direction)
 
 String drill_stop(const String&)
 {
+    DEBUG_LOG("Stopping drill (pins = %d : %d)", pins::DRILL.clockwise, pins::DRILL.counter_clockwise);
     digitalWrite(pins::DRILL.clockwise, LOW);
     digitalWrite(pins::DRILL.counter_clockwise, LOW);
 

@@ -28,12 +28,13 @@ struct stepper_pin_t
 {
     pin_t dir;
     pin_t step;
+    pin_t enable;
 };
 
 constexpr util::array<stepper_pin_t, 2> PLATFORM_PINS = {
     {
-        {.dir = 9, .step = 8},
-        {.dir = 11, .step = 10},
+        {.dir = 9, .step = 8, .enable = 35},
+        {.dir = 11, .step = 10, .enable = 7},
     },
 };
 
@@ -45,9 +46,9 @@ constexpr struct
 
 constexpr int DRILL_PLATFORM_LIMIT_SWITCH = 44;
 
-constexpr stepper_pin_t DRILL_PLATFORM_PINS = {.dir = 13, .step = 12};
+constexpr stepper_pin_t DRILL_PLATFORM_PINS = {.dir = 13, .step = 12, .enable = 33};
 
-const util::array PUMP_PINS = {22, 24, 26, 28, 30, 32, 34, 36};
+const util::array PUMP_PINS = {31, 24, 26, 32, 34, 36};
 
 constexpr pin_t TEMP_SENSOR_PIN = A0;
 constexpr pin_t MOISTURE_SENSOR_PIN = A1;

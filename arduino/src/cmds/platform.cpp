@@ -12,16 +12,61 @@ namespace cmd {
 namespace {
 
 // TODO
-// constexpr uint32_t STEPS_PER_REV = 200;
+constexpr uint32_t STEPS_PER_REV = 200;
 // solve lowering from max height with limit switch on
 
-StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step, 7);
-StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, 7);
+constexpr float NUM_REV_HARD_STOP = -14; // TODO
+
+
+StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step, pins::PLATFORM_PINS[0].enable, STEPS_PER_REV);
+StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, pins::PLATFORM_PINS[1].enable, STEPS_PER_REV);
+
+bool left_platform_hard_stop = false;
+bool right_platform_hard_stop = false;
+bool platform_hard_stop_overwrite = false;
 
 bool left_platform_limit = false;
 bool right_platform_limit = false;
-
 bool platform_limit_overwrite = false;
+
+bool handle_hard_stop()
+{
+    static bool left_has_hard_stopped = false;
+    static bool right_has_hard_stopped = false;
+
+    if (platform_hard_stop_overwrite) {
+        left_platform_limit = false;  // reset detection state
+        right_platform_limit = false; // reset detection state
+        left_has_hard_stopped = false;  // reset on-press handler
+        right_has_hard_stopped = false; // reset on-press handler
+        return false;
+    }
+
+    left_platform_hard_stop = lowering_platform_left.getNumRevolutions() < NUM_REV_HARD_STOP;
+    right_platform_hard_stop = lowering_platform_right.getNumRevolutions() < NUM_REV_HARD_STOP;
+
+    if (left_platform_hard_stop) {
+        if(!left_has_hard_stopped) {
+            left_has_hard_stopped = true;
+            lowering_platform_left.stop();
+        }
+    } else if (left_has_hard_stopped) {
+        left_has_hard_stopped = false;
+    }
+
+    if (right_platform_hard_stop) {
+        if(!right_has_hard_stopped) {
+            right_has_hard_stopped = true;
+            lowering_platform_right.stop();
+        }
+    } else if (right_has_hard_stopped) {
+        right_has_hard_stopped = false;
+    }
+
+
+    return left_platform_hard_stop || right_platform_hard_stop;
+}
+
 
 // TODO: Better limit handling. Wrapper class?
 // Handler for platform limit switches
@@ -29,10 +74,14 @@ bool platform_limit_overwrite = false;
 // Returns whether any switches were high
 bool handle_limit_switches()
 {
-    static bool detect_pressed = false;
+    static bool detect_left_pressed = false;
+    static bool detect_right_pressed = false;
 
     if (platform_limit_overwrite) {
-        detect_pressed = false; // reset detection state
+        left_platform_limit = false;  // reset detection state
+        right_platform_limit = false; // reset detection state
+        detect_left_pressed = false;  // reset on-press handler
+        detect_right_pressed = false; // reset on-press handler
         return false;
     }
 
@@ -41,28 +90,47 @@ bool handle_limit_switches()
 
     // Only actually stop the motors the first time we detect switches are pressed down
     // we don't want to stop the motors from moving DOWN, only stop UPward movements.
-    if (left_platform_limit || right_platform_limit) {
-        if (!detect_pressed) {
-            detect_pressed = true;
+    if (left_platform_limit) {
+        if (!detect_left_pressed) {
+            // Reset the step count after reaching the top
+            lowering_platform_left.resetStepCount();
+
+            detect_left_pressed = true;
             lowering_platform_left.stop();
-            lowering_platform_right.stop();
-            return false;
+            DEBUG_LOG("Left platform motor limit");
         }
-    } else if (detect_pressed) {
-        detect_pressed = false;
+    } else if (detect_left_pressed) {
+        detect_left_pressed = false;
+        DEBUG_LOG("Reset left platform motor limit");
+    }
+
+    if (right_platform_limit) {
+        if (!detect_right_pressed) {
+            // Reset the step count after reaching the top
+            lowering_platform_right.resetStepCount();
+
+            detect_right_pressed = true;
+            lowering_platform_right.stop();
+            DEBUG_LOG("Right platform motor limit");
+        }
+    } else if (detect_right_pressed) {
+        detect_right_pressed = false;
+        DEBUG_LOG("Reset right platform motor limit");
     }
 
     return right_platform_limit || left_platform_limit;
 }
 
-bool handle_platform_overwrite(bool mode)
+bool handle_platform_limit_overwrite(bool mode)
 {
-    if (mode) {
-        left_platform_limit = false; // reset the platform limit to false to allow motor movements
-        right_platform_limit = false;
-    }
     platform_limit_overwrite = mode;
     return platform_limit_overwrite;
+}
+
+bool handle_platform_hard_stop_overwrite(bool mode)
+{
+    platform_hard_stop_overwrite = mode;
+    return platform_hard_stop_overwrite;
 }
 
 } // namespace
@@ -70,12 +138,17 @@ bool handle_platform_overwrite(bool mode)
 // Moves the platform down 5 revolutions
 void platform_up()
 {
-    // Only allow upward movement when limit switches are not pressed
-    if (!left_platform_limit && !right_platform_limit) {
+    DEBUG_LOG("Limits: (left = %d, right = %d)", (int)left_platform_limit, (int)right_platform_limit);
+    // Only allow each motor to move upwards when their respective limit is not pressed
+    if (!left_platform_limit) {
         lowering_platform_left.setDirection(StepperMotor::Direction::POSITIVE);
-        lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
-
+        DEBUG_LOG("Platform moving left motor");
         lowering_platform_left.start();
+    }
+
+    if(!right_platform_limit) {
+        lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
+        DEBUG_LOG("Platform moving right motor");
         lowering_platform_right.start();
     }
 }
@@ -83,11 +156,15 @@ void platform_up()
 // Moves the platform up for 5 revolutions
 void platform_down()
 {
-    lowering_platform_left.setDirection(StepperMotor::Direction::NEGATIVE);
-    lowering_platform_right.setDirection(StepperMotor::Direction::NEGATIVE);
+    if (!left_platform_hard_stop) {
+        lowering_platform_left.setDirection(StepperMotor::Direction::NEGATIVE);
+        lowering_platform_left.start();
+    }
 
-    lowering_platform_left.start();
-    lowering_platform_right.start();
+    if (!right_platform_hard_stop) {
+        lowering_platform_right.setDirection(StepperMotor::Direction::NEGATIVE);
+        lowering_platform_right.start();
+    }
 }
 
 void platform_stop()
@@ -96,23 +173,50 @@ void platform_stop()
     lowering_platform_right.stop();
 }
 
-String set_platform_overwrite(const String& mode)
+String platform_set_enabled(const String& is_enabled)
 {
-    if (mode.equals("on")) {
+    if(is_enabled.equals("true")) {
+        lowering_platform_left.setEnabled(true);
+        lowering_platform_right.setEnabled(true);
+    } else if (is_enabled.equals("false")) {
+        lowering_platform_left.setEnabled(false);
+        lowering_platform_right.setEnabled(false);
+    }
+
+    return {};
+}
+
+String set_platform_limit_overwrite(const String& mode)
+{
+    if (mode.equals("off")) {
         DEBUG_LOG("Enabling lowering platform limit switches Overwrite.");
-        handle_platform_overwrite(true);
-    } else if (mode.equals("off")) {
+        handle_platform_limit_overwrite(true);
+    } else if (mode.equals("on")) {
         DEBUG_LOG("Disabling lowering platform limit switches Overwrite.");
-        handle_platform_overwrite(false);
+        handle_platform_limit_overwrite(false);
     } else {
         return CMD_ERR_MSG;
     }
     return {};
 }
 
-String read_platform_steps(const String& /*unused*/)
+String set_platform_hard_stop_overwrite(const String& mode)
 {
-    return String(lowering_platform_left.getNumSteps()) + " + " + String(lowering_platform_right.getNumSteps());
+    if (mode.equals("off")) {
+        DEBUG_LOG("Enabling lowering platform limit switches Overwrite.");
+        handle_platform_hard_stop_overwrite(true);
+    } else if (mode.equals("on")) {
+        DEBUG_LOG("Disabling lowering platform limit switches Overwrite.");
+        handle_platform_hard_stop_overwrite(false);
+    } else {
+        return CMD_ERR_MSG;
+    }
+    return {};
+}
+
+String read_platform_revs(const String& /*unused*/)
+{
+    return String(lowering_platform_left.getNumRevolutions());
 }
 
 void init_platform()
@@ -125,6 +229,7 @@ void init_platform()
 void update_platform()
 {
     handle_limit_switches();
+    handle_hard_stop();
 }
 
 } // namespace cmd

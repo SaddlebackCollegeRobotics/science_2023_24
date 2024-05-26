@@ -52,10 +52,11 @@ bool stepper_pwm_callback(void*)
 } // namespace
 
 StepperMotor::StepperMotor(pins::pin_t dir_pin, pins::pin_t step_pin, pins::pin_t enable_pin,
-                           uint32_t step_period_millis)
+                           uint32_t steps_per_rev, uint32_t step_period_millis)
     : dir_pin_(dir_pin)
     , step_pin_(step_pin)
     , enable_pin_(enable_pin)
+    , steps_per_rev_(steps_per_rev)
     , step_freq_(1000 / step_period_millis)
     , id_(s_idx++)
 {
@@ -64,6 +65,7 @@ StepperMotor::StepperMotor(pins::pin_t dir_pin, pins::pin_t step_pin, pins::pin_
     pinMode(step_pin, OUTPUT);
 
     setDirection(dir_);
+    setEnabled(false);
 
     stop();
 
@@ -93,16 +95,35 @@ void StepperMotor::setDirection(Direction dir)
 void StepperMotor::start()
 {
     steppers_info[id_].enabled = true;
-    digitalWrite(enable_pin_, LOW);
 }
 
 void StepperMotor::stop()
 {
     steppers_info[id_].enabled = false;
-    digitalWrite(enable_pin_, HIGH);
+
+    DEBUG_LOG("Setting step pin %d to LOW", step_pin_);
+    digitalWrite(step_pin_, LOW);
 }
 
 int StepperMotor::getNumSteps() const
 {
     return steppers_info[id_].num_steps;
+}
+
+float StepperMotor::getNumRevolutions() const
+{
+    return static_cast<float>(steppers_info[id_].num_steps) / steps_per_rev_;
+}
+
+void StepperMotor::resetStepCount()
+{
+    steppers_info[id_].num_steps = 0;
+}
+
+void StepperMotor::setEnabled(bool is_enabled)
+{
+    DEBUG_LOG("Setting enable pin %d to HIGH", enable_pin_);
+
+    digitalWrite(enable_pin_, is_enabled ? LOW : HIGH);
+    steppers_info[id_].enabled = false;
 }
