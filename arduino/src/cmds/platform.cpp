@@ -17,9 +17,10 @@ constexpr uint32_t STEPS_PER_REV = 200;
 
 constexpr float NUM_REV_HARD_STOP = -14; // TODO
 
-
-StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step, pins::PLATFORM_PINS[0].enable, STEPS_PER_REV);
-StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step, pins::PLATFORM_PINS[1].enable, STEPS_PER_REV);
+StepperMotor lowering_platform_left(pins::PLATFORM_PINS[0].dir, pins::PLATFORM_PINS[0].step,
+                                    pins::PLATFORM_PINS[0].enable, STEPS_PER_REV);
+StepperMotor lowering_platform_right(pins::PLATFORM_PINS[1].dir, pins::PLATFORM_PINS[1].step,
+                                     pins::PLATFORM_PINS[1].enable, STEPS_PER_REV);
 
 bool left_platform_hard_stop = false;
 bool right_platform_hard_stop = false;
@@ -35,8 +36,8 @@ bool handle_hard_stop()
     static bool right_has_hard_stopped = false;
 
     if (platform_hard_stop_overwrite) {
-        left_platform_limit = false;  // reset detection state
-        right_platform_limit = false; // reset detection state
+        left_platform_limit = false;    // reset detection state
+        right_platform_limit = false;   // reset detection state
         left_has_hard_stopped = false;  // reset on-press handler
         right_has_hard_stopped = false; // reset on-press handler
         return false;
@@ -46,7 +47,7 @@ bool handle_hard_stop()
     right_platform_hard_stop = lowering_platform_right.getNumRevolutions() < NUM_REV_HARD_STOP;
 
     if (left_platform_hard_stop) {
-        if(!left_has_hard_stopped) {
+        if (!left_has_hard_stopped) {
             left_has_hard_stopped = true;
             lowering_platform_left.stop();
         }
@@ -55,7 +56,7 @@ bool handle_hard_stop()
     }
 
     if (right_platform_hard_stop) {
-        if(!right_has_hard_stopped) {
+        if (!right_has_hard_stopped) {
             right_has_hard_stopped = true;
             lowering_platform_right.stop();
         }
@@ -63,10 +64,8 @@ bool handle_hard_stop()
         right_has_hard_stopped = false;
     }
 
-
     return left_platform_hard_stop || right_platform_hard_stop;
 }
-
 
 // TODO: Better limit handling. Wrapper class?
 // Handler for platform limit switches
@@ -146,7 +145,7 @@ void platform_up()
         lowering_platform_left.start();
     }
 
-    if(!right_platform_limit) {
+    if (!right_platform_limit) {
         lowering_platform_right.setDirection(StepperMotor::Direction::POSITIVE);
         DEBUG_LOG("Platform moving right motor");
         lowering_platform_right.start();
@@ -175,7 +174,7 @@ void platform_stop()
 
 String platform_set_enabled(const String& is_enabled)
 {
-    if(is_enabled.equals("true")) {
+    if (is_enabled.equals("true")) {
         lowering_platform_left.setEnabled(true);
         lowering_platform_right.setEnabled(true);
     } else if (is_enabled.equals("false")) {

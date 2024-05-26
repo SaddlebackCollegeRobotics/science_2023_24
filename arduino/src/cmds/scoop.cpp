@@ -24,7 +24,7 @@ const int scoop2Level = 1430;
 const int scoop2Down = 2470;
 const int scoop2Up = 1300;
 
-// SCOOP 3 pulse widths 
+// SCOOP 3 pulse widths
 const int scoop3Level = 1550;
 const int scoop3Down = 650;
 const int scoop3Up = 1720;
@@ -90,53 +90,44 @@ void scoop_level(Servo& scoop, SCOOP_NUM scoopNum)
 
 void scoop_adjust(Servo& scoop, const int degrees, SCOOP_NUM scoopNum)
 {
-    switch (scoopNum)
-    {
-        case SCOOP_NUM::SCOOP_1:
-            if ((scoop.readMicroseconds() + (degrees*7.41)) >= scoop1Up){
-                scoop.writeMicroseconds(scoop1Up);
-            }
-            else if ((scoop.readMicroseconds() + (degrees*7.41)) <= scoop1Down){
-                scoop.writeMicroseconds(scoop1Down);
-            }
-            else{
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees*7.41));
-            }
-            break;
-        case SCOOP_NUM::SCOOP_2:
-            if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) <= scoop2Up){
-                scoop.writeMicroseconds(scoop2Up);
-            }
-            else if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) >= scoop2Down){
-                scoop.writeMicroseconds(scoop2Down);
-            }
-            else{
-                DEBUG_LOG("pulsewidth = %d", degrees);
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (-1*(degrees*7.41)));
-            }
-            break;
-        case SCOOP_NUM::SCOOP_3:
-            if ((scoop.readMicroseconds() + (degrees*7.41)) >= scoop3Up){
-                scoop.writeMicroseconds(scoop3Up);
-            }
-            else if ((scoop.readMicroseconds() + (degrees*7.41)) <= scoop3Down){
-                scoop.writeMicroseconds(scoop3Down);
-            }
-            else{
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees*7.41));
-            }
-            break;
-        case SCOOP_NUM::SCOOP_4:
-            if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) <= scoop4Up){
-                scoop.writeMicroseconds(scoop4Up);
-            }
-            else if ((scoop.readMicroseconds() + (-1*(degrees*7.41))) >= scoop4Down){
-                scoop.writeMicroseconds(scoop4Down);
-            }
-            else{
-                scoop.writeMicroseconds(scoop.readMicroseconds() + (-1*(degrees*7.41)));
-            }
-            break;
+    switch (scoopNum) {
+    case SCOOP_NUM::SCOOP_1:
+        if ((scoop.readMicroseconds() + (degrees * 7.41)) >= scoop1Up) {
+            scoop.writeMicroseconds(scoop1Up);
+        } else if ((scoop.readMicroseconds() + (degrees * 7.41)) <= scoop1Down) {
+            scoop.writeMicroseconds(scoop1Down);
+        } else {
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees * 7.41));
+        }
+        break;
+    case SCOOP_NUM::SCOOP_2:
+        if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) <= scoop2Up) {
+            scoop.writeMicroseconds(scoop2Up);
+        } else if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) >= scoop2Down) {
+            scoop.writeMicroseconds(scoop2Down);
+        } else {
+            DEBUG_LOG("pulsewidth = %d", degrees);
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (-1 * (degrees * 7.41)));
+        }
+        break;
+    case SCOOP_NUM::SCOOP_3:
+        if ((scoop.readMicroseconds() + (degrees * 7.41)) >= scoop3Up) {
+            scoop.writeMicroseconds(scoop3Up);
+        } else if ((scoop.readMicroseconds() + (degrees * 7.41)) <= scoop3Down) {
+            scoop.writeMicroseconds(scoop3Down);
+        } else {
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (degrees * 7.41));
+        }
+        break;
+    case SCOOP_NUM::SCOOP_4:
+        if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) <= scoop4Up) {
+            scoop.writeMicroseconds(scoop4Up);
+        } else if ((scoop.readMicroseconds() + (-1 * (degrees * 7.41))) >= scoop4Down) {
+            scoop.writeMicroseconds(scoop4Down);
+        } else {
+            scoop.writeMicroseconds(scoop.readMicroseconds() + (-1 * (degrees * 7.41)));
+        }
+        break;
     }
 }
 

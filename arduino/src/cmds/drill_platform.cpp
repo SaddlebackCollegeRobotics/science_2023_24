@@ -16,7 +16,8 @@ constexpr uint32_t STEPS_PER_REV = 200;
 // How far the drill platform is allowed to move down before hard-stop kicks in
 constexpr float NUM_REV_HARD_STOP = -8; // TODO
 
-StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step, pins::DRILL_PLATFORM_PINS.enable, STEPS_PER_REV);
+StepperMotor drill_platform(pins::DRILL_PLATFORM_PINS.dir, pins::DRILL_PLATFORM_PINS.step,
+                            pins::DRILL_PLATFORM_PINS.enable, STEPS_PER_REV);
 
 bool drill_platform_limit = false;
 bool drill_limit_overwrite = false;

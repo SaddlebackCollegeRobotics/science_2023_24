@@ -32,7 +32,7 @@ bool stepper_pwm_callback(void*)
         }
 
         // DEBUG_LOG("Stepping motor %d (state = %s)", stepper.pin, stepper.state ? "HIGH" : "LOW");
-        
+
         if (stepper.dir == StepperMotor::Direction::POSITIVE) {
             stepper.num_steps++;
         } else {
@@ -51,8 +51,8 @@ bool stepper_pwm_callback(void*)
 
 } // namespace
 
-StepperMotor::StepperMotor(pins::pin_t dir_pin, pins::pin_t step_pin, pins::pin_t enable_pin,
-                           uint32_t steps_per_rev, uint32_t step_period_millis)
+StepperMotor::StepperMotor(pins::pin_t dir_pin, pins::pin_t step_pin, pins::pin_t enable_pin, uint32_t steps_per_rev,
+                           uint32_t step_period_millis)
     : dir_pin_(dir_pin)
     , step_pin_(step_pin)
     , enable_pin_(enable_pin)

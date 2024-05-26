@@ -14,7 +14,7 @@ namespace pump {
 // bool pumpsActive[8];
 } // namespace pump
 
-void pump_run(uint8_t p_id/*, uint32_t t*/)
+void pump_run(uint8_t p_id /*, uint32_t t*/)
 {
     // pump::startMillis[p_id] = millis();
     DEBUG_LOG("Running pump (pin = %d)", pins::PUMP_PINS[p_id]);
