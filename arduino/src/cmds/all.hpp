@@ -221,7 +221,6 @@ inline void init_hooks()
     drill_probe_init();
     drill_init();
     pump_init();
-    // stepper_init();
 }
 
 inline void update_hooks()
