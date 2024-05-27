@@ -29,8 +29,7 @@ using cmd_map = util::map<util::string_view, fn_map, NUM_DEVICES>;
         "co2_" #n,                                                                                                     \
             {                                                                                                          \
                 {                                                                                                      \
-                    {"read",                                                                                       \
-                     [](const String& str) -> String { return co2_read(CO2_NUM::CO2_##n, str); }},                                                                                             \
+                    {"read", [](const String& str) -> String { return co2_read(CO2_NUM::CO2_##n, str); }},             \
                 },                                                                                                     \
             },                                                                                                         \
     }
@@ -113,39 +112,40 @@ constexpr cmd_map COMMAND_MAP = {
         // Platform management
         {
             "platform_lower",
-            {{{"up",
-               [](const String&) {
-                   platform_up();
-                   return String{};
-               }},
-              {"down",
-               [](const String&) {
-                   platform_down();
-                   return String{};
-               }},
-              {"stop",
-               [](const String&) {
-                   platform_stop();
-                   return String{};
-               }},
-              {
-                  "limit_input",
-                  set_platform_limit_overwrite,
-              },
-              {
-                  "hard_stop_input",
-                  set_platform_hard_stop_overwrite,
-              },
-              {
-                  "read",
-                  read_platform_revs,
-              },
-              {
-                  "set_enabled",
-                  platform_set_enabled,
-              },
-              }},
-              
+            {{
+                {"up",
+                 [](const String&) {
+                     platform_up();
+                     return String{};
+                 }},
+                {"down",
+                 [](const String&) {
+                     platform_down();
+                     return String{};
+                 }},
+                {"stop",
+                 [](const String&) {
+                     platform_stop();
+                     return String{};
+                 }},
+                {
+                    "limit_input",
+                    set_platform_limit_overwrite,
+                },
+                {
+                    "hard_stop_input",
+                    set_platform_hard_stop_overwrite,
+                },
+                {
+                    "read",
+                    read_platform_revs,
+                },
+                {
+                    "set_enabled",
+                    platform_set_enabled,
+                },
+            }},
+
         },
         //
         {
@@ -220,7 +220,7 @@ inline void init_hooks()
     init_drill_platform();
     drill_probe_init();
     drill_init();
-    // pump_init();
+    pump_init();
     // stepper_init();
 }
 
