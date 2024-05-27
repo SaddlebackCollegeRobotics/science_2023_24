@@ -174,10 +174,10 @@ void platform_stop()
 
 String platform_set_enabled(const String& is_enabled)
 {
-    if (is_enabled.equals("true")) {
+    if (static_cast<bool>(is_enabled.equals("true"))) {
         lowering_platform_left.setEnabled(true);
         lowering_platform_right.setEnabled(true);
-    } else if (is_enabled.equals("false")) {
+    } else if (static_cast<bool>(is_enabled.equals("false"))) {
         lowering_platform_left.setEnabled(false);
         lowering_platform_right.setEnabled(false);
     }
@@ -187,10 +187,10 @@ String platform_set_enabled(const String& is_enabled)
 
 String set_platform_limit_overwrite(const String& mode)
 {
-    if (mode.equals("off")) {
+    if (static_cast<bool>(mode.equals("off"))) {
         DEBUG_LOG("Enabling lowering platform limit switches Overwrite.");
         handle_platform_limit_overwrite(true);
-    } else if (mode.equals("on")) {
+    } else if (static_cast<bool>(mode.equals("on"))) {
         DEBUG_LOG("Disabling lowering platform limit switches Overwrite.");
         handle_platform_limit_overwrite(false);
     } else {
@@ -201,10 +201,10 @@ String set_platform_limit_overwrite(const String& mode)
 
 String set_platform_hard_stop_overwrite(const String& mode)
 {
-    if (mode.equals("off")) {
+    if (static_cast<bool>(mode.equals("off"))) {
         DEBUG_LOG("Enabling lowering platform limit switches Overwrite.");
         handle_platform_hard_stop_overwrite(true);
-    } else if (mode.equals("on")) {
+    } else if (static_cast<bool>(mode.equals("on"))) {
         DEBUG_LOG("Disabling lowering platform limit switches Overwrite.");
         handle_platform_hard_stop_overwrite(false);
     } else {
