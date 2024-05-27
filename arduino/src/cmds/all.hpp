@@ -167,7 +167,11 @@ constexpr cmd_map COMMAND_MAP = {
                }},
               {
                   "limit_input",
-                  set_drill_platform_overwrite,
+                  set_drill_platform_limit_overwrite,
+              },
+              {
+                  "hard_stop_input",
+                  set_drill_platform_hard_stop_overwrite,
               }}},
         },
         //
