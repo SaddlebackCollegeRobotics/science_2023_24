@@ -93,10 +93,10 @@ void drill_platform_stop()
 
 String set_drill_platform_overwrite(const String& mode)
 {
-    if (mode.equals("on")) {
+    if (static_cast<bool>(mode.equals("on"))) {
         DEBUG_LOG("Enabling lowering drill-platform limit overwrite.");
         handle_drill_platform_overwrite(true);
-    } else if (mode.equals("off")) {
+    } else if (static_cast<bool>(mode.equals("off"))) {
         DEBUG_LOG("Disabling lowering drill-platform limit overwrite.");
         handle_drill_platform_overwrite(false);
     } else {
