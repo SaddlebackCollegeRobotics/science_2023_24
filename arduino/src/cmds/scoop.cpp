@@ -133,7 +133,7 @@ void scoop_adjust(Servo& scoop, const int degrees, SCOOP_NUM scoopNum)
 
 } // namespace
 
-String scoop_read(SCOOP_NUM which, const String& param)
+String scoop_read(SCOOP_NUM which, const String& /*unused*/)
 {
     int scoop_num = static_cast<int>(which);
     return {};

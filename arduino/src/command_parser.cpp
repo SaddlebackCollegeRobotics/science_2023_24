@@ -25,7 +25,10 @@ ParsedCommand ParsedCommand::from_str(const char* str)
     // TODO: Refactor. Maybe new macro
     DEBUG_LOG(R"(Parsing command: (dev="%s", func="%s", param="%s", checksum="%#.8lx"))", data.dev.c_str(),
               data.func.c_str(), data.param.c_str(), data.checksum)
-    // Calc the checksum of the received data, excluding the received checksum itself
+// Calc the checksum of the received data, excluding the received checksum itself
+#ifdef NO_CHECKSUM
+    [[maybe_unused]]
+#endif
     checksum_data_t checksum_calc =
         CRC32::calculate(str, str_data[0].length() + str_data[1].length() + str_data[2].length() + 3);
 

@@ -8,19 +8,10 @@ namespace cmd {
 
 namespace {
 
-namespace pump {
-// unsigned long startMillis[8];
-// uint8_t pumpPeriod[8];
-// bool pumpsActive[8];
-} // namespace pump
-
 void pump_run(uint8_t p_id /*, uint32_t t*/)
 {
-    // pump::startMillis[p_id] = millis();
     DEBUG_LOG("Running pump (pin = %d)", pins::PUMP_PINS[p_id]);
     digitalWrite(pins::PUMP_PINS[p_id], HIGH);
-    // pump::pumpPeriod[p_id] = t;
-    // pump::pumpsActive[p_id] = true;
 }
 
 void pump_stop(uint8_t p_id)
@@ -31,7 +22,7 @@ void pump_stop(uint8_t p_id)
 
 } // namespace
 
-String pump_write(PUMP_NUM which, PumpMode mode, const String& param)
+String pump_write(PUMP_NUM which, PumpMode mode, [[maybe_unused]] const String& param)
 {
     int pump_num = static_cast<int>(which);
 
@@ -57,11 +48,6 @@ void pump_init()
         pinMode(pin, OUTPUT);
         digitalWrite(pin, LOW);
     }
-
-    // pump state to false
-    // for (auto& iter : pump::pumpsActive) {
-    //     iter = false;
-    // }
 }
 
 // void pump_duration()
