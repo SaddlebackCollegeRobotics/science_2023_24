@@ -35,12 +35,18 @@ class ScienceServer(Node):
 
         self._arduino_serial.write(final_cmd_bytes)
 
-        ret_data = str(self._arduino_serial.readline()).split(",")
+        ret_data = []
 
-        # Arduino did not respond, so command was invalid
-        if len(ret_data) < 4:
-            response.descriptors = [ParameterDescriptor(name="INVALID")]
-            return response
+        while len(ret_data) < 4:
+            ret_data = str(self._arduino_serial.readline()).split(",")
+            if not ret_data:
+                response.descriptors = [ParameterDescriptor(name="INVALID")]
+                return response
+
+            if ret_data[0].find("[") != -1:
+                self.get_logger().info(f'Received debug msg: "{",".join(ret_data)}"')
+                ret_data = []
+                continue
 
         # First field has leading "b'"
         # Forth field has a trailing "\\n'"

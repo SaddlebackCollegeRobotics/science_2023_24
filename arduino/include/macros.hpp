@@ -9,7 +9,7 @@
 #define VA_ARGS(...) , ##__VA_ARGS__
 #define DEBUG_LOG(msg, ...)                                                                                            \
     {                                                                                                                  \
-        Serial.print("DEBUG: ");                                                                                       \
+        Serial.print("[DEBUG]: ");                                                                                       \
         char buf[64]{};                                                                                                \
         snprintf(buf, 64, msg VA_ARGS(__VA_ARGS__));                                                                   \
         Serial.println(buf);                                                                                           \
