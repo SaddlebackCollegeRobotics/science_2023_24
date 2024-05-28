@@ -18,7 +18,7 @@ class ScienceServer(Node):
             DescribeParameters, "science_rpc", self.science_rpc_callback
         )
 
-        self._arduino_serial = Serial("/dev/ttyACM0", 9600, timeout=1)
+        self._arduino_serial = Serial("/dev/ttyACM1", 9600, timeout=1)
 
     def science_rpc_callback(self, request, response):
         command_str = ",".join(request.names) + ","
@@ -35,18 +35,11 @@ class ScienceServer(Node):
 
         self._arduino_serial.write(final_cmd_bytes)
 
-        ret_data = []
+        ret_data = ret_data = str(self._arduino_serial.readline()).split(",")
 
-        while len(ret_data) < 4:
-            ret_data = str(self._arduino_serial.readline()).split(",")
-            if not ret_data:
-                response.descriptors = [ParameterDescriptor(name="INVALID")]
-                return response
-
-            if ret_data[0].find("[") != -1:
-                self.get_logger().info(f'Received debug msg: "{",".join(ret_data)}"')
-                ret_data = []
-                continue
+        if len(ret_data) < 4:
+            response.descriptors = [ParameterDescriptor(name="INVALID")]
+            return response
 
         # First field has leading "b'"
         # Forth field has a trailing "\\n'"
