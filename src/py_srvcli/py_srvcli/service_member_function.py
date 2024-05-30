@@ -21,7 +21,8 @@ class ScienceServer(Node):
         self._arduino_serial = Serial("/dev/ttyACM0", 9600, timeout=1)
 
     def __del__(self):
-        self._arduino_serial.close()
+        if self._arduino_serial is not None:
+            self._arduino_serial.close()
 
     def science_rpc_callback(self, request, response):
         command_str = ",".join(request.names) + ","
